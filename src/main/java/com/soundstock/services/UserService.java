@@ -1,6 +1,12 @@
 package com.soundstock.services;
 
-import com.soundstock.dto.UserDTO;
+import com.soundstock.enums.TokenType;
+import com.soundstock.mapper.UserMapper;
+import com.soundstock.model.User;
+import com.soundstock.model.dto.UserDTO;
+import com.soundstock.model.entity.TokenEntity;
+import com.soundstock.model.entity.UserEntity;
+import com.soundstock.repository.TokenRepository;
 import com.soundstock.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
@@ -9,19 +15,48 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.soundstock.exceptions.ErrorMessages.ENTITY_EXISTS;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final TokenRepository tokenRepository;
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
-    public String registerUser(UserDTO userDTO) {
 
-        if(userRepository.existsByUsernameOrEmail(userDTO.getUsername(), userDto.getEmail())){
-            throw new EntityExistsException("Username or Email already exists");
-        };
-        //TODO mapowanie userdto do user
+    public void registerUser(UserDTO userDTO) {
+
+        if (userRepository.existsByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail())) {
+            throw new EntityExistsException(ENTITY_EXISTS);
+        }
+        User user = userMapper.mapToUser(userDTO);
+        userRepository.save(userMapper.mapToUserEntity(user));
+
         String token = UUID.randomUUID().toString();
-        //TODO encja tokena - wartosc tokena, typ tokena, czy token został juz uzyty, data wygasniecia, user email, metoda generujaca expiration date
-        return null;
+        TokenEntity tokenEntity = new TokenEntity();
+        tokenEntity.setValue(token);
+        tokenEntity.setType(TokenType.REGISTRATION);
+        tokenEntity.setUsed(false);
+        tokenEntity.setExpirationDate(tokenEntity.generateExpirationDate());
+        tokenEntity.setUserEmail(userDTO.getEmail());
+        tokenRepository.save(tokenEntity);
+    }
+
+    public void confirmUser(String tokenValue) {
+        TokenEntity tokenEntity = tokenRepository.findByValue(tokenValue)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+
+        if (tokenEntity.getUsed()) {
+            throw new IllegalStateException("Token has already been used");
+        }
+        UserEntity user = userRepository.findByEmail(tokenEntity.getUserEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        tokenEntity.setUsed(true);
+        tokenRepository.save(tokenEntity);
     }
 }

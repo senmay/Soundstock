@@ -1,4 +1,4 @@
-package com.soundstock.entity;
+package com.soundstock.model.entity;
 
 import com.soundstock.enums.UserRole;
 import jakarta.persistence.*;
@@ -17,7 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name ="users")
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -32,15 +32,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        User user = (User) o;
-        return getId() != null && Objects.equals(getId(), user.getId());
+        UserEntity userEntity = (UserEntity) o;
+        return getId() != null && Objects.equals(getId(), userEntity.getId());
     }
-
     @Override
     public int hashCode() {
         return getClass().hashCode();
