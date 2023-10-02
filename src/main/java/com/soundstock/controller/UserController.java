@@ -1,5 +1,7 @@
 package com.soundstock.controller;
 
+import com.soundstock.mapper.UserMapper;
+import com.soundstock.model.User;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,14 +13,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("user/v1")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerUser(@RequestBody UserDTO userDTO) {
-        userService.registerUser(userDTO);
+        userService.registerUser(userMapper.mapToUser(userDTO));
     }
 
-    @GetMapping("/confirm")
+    @PostMapping("/confirm")
     public void confirmUser(@RequestParam("token") String token) {
         userService.confirmUser(token);
     }
