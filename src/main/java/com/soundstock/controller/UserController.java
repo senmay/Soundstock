@@ -1,7 +1,6 @@
 package com.soundstock.controller;
 
 import com.soundstock.mapper.UserMapper;
-import com.soundstock.model.User;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +16,12 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerUser(@RequestBody UserDTO userDTO) {
-        userService.registerUser(userMapper.mapToUser(userDTO));
+    public String registerUser(@RequestBody UserDTO userDTO) {
+        return userService.registerUser(userMapper.mapToUser(userDTO));
     }
 
     @PostMapping("/confirm")
+    @ResponseStatus(HttpStatus.OK)
     public void confirmUser(@RequestParam("token") String token) {
         userService.confirmUser(token);
     }

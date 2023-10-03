@@ -2,7 +2,6 @@ package com.soundstock.model.dto;
 
 import com.soundstock.enums.UserRole;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Value;
 
 @Value

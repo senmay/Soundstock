@@ -1,0 +1,3 @@
+create sequence users_seq start with 1 increment by 50
+create table tokens (used boolean, expiration_date timestamp(6), id bigserial not null, type varchar(255) check (type in ('REGISTRATION','PASSWORD_RESET')), user_email varchar(255), value varchar(255) not null unique, primary key (id))
+create table users (is_enabled boolean not null, id bigint not null, join_date timestamp(6), modification_date timestamp(6), email varchar(255), password varchar(255), role varchar(255) check (role in ('ADMIN','USER','MODERATOR')), username varchar(255), primary key (id))

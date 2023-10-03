@@ -2,18 +2,20 @@ package com.soundstock.services;
 
 import com.soundstock.enums.TokenType;
 import com.soundstock.enums.UserRole;
+import com.soundstock.exceptions.ExpiredDate;
 import com.soundstock.mapper.UserMapper;
 import com.soundstock.model.User;
-import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.TokenEntity;
 import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.TokenRepository;
 import com.soundstock.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.soundstock.exceptions.ErrorMessages.ENTITY_EXISTS;
@@ -27,14 +29,15 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
-    public void registerUser(User user) {
+    @Transactional
+    public String registerUser(User user) {
 
         if (userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail())) {
             throw new EntityExistsException(ENTITY_EXISTS);
         }
         userRepository.save(userMapper.mapToUserEntity(user));
 
-        createAndStoreRegistrationToken(user.getEmail());
+        return createAndStoreRegistrationToken(user.getEmail()).getValue();
     }
 
     public void confirmUser(String tokenValue) {
@@ -44,6 +47,10 @@ public class UserService {
         if (tokenEntity.getUsed()) {
             throw new IllegalStateException("Token has already been used");
         }
+        if (tokenEntity.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new ExpiredDate("Token is expired");
+        }
+
         UserEntity user = userRepository.findByEmail(tokenEntity.getUserEmail())
                 .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND));
 
@@ -55,15 +62,9 @@ public class UserService {
         tokenRepository.save(tokenEntity);
     }
 
-    private void createAndStoreRegistrationToken(String email) {
-        String token = UUID.randomUUID().toString();
-        TokenEntity tokenEntity = new TokenEntity();
-        tokenEntity.setValue(token);
-        tokenEntity.setType(TokenType.REGISTRATION);
-        tokenEntity.setUsed(false);
-        tokenEntity.setExpirationDate(tokenEntity.generateExpirationDate());
-        tokenEntity.setUserEmail(email);
+    private TokenEntity createAndStoreRegistrationToken(String email) {
+        TokenEntity tokenEntity = new TokenEntity(UUID.randomUUID().toString(), TokenType.REGISTRATION, email);
         tokenRepository.save(tokenEntity);
+        return tokenEntity;
     }
-
 }

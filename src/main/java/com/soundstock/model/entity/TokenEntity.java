@@ -27,21 +27,25 @@ public class TokenEntity {
     private Boolean used = false;
     private LocalDateTime expirationDate;
     private String userEmail;
-    public LocalDateTime generateExpirationDate() {
-        return LocalDateTime.now().plusMonths(1);
+
+    public TokenEntity(String value, TokenType type, String userEmail) {
+        this.value = value;
+        this.type = type;
+        this.used=false;
+        this.expirationDate = LocalDateTime.now().plusMonths(1);
+        this.userEmail = userEmail;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        TokenEntity that = (TokenEntity) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
+        if (!(o instanceof TokenEntity that)) return false;
+        return id.equals(that.id) && value.equals(that.value) && type == that.type && used.equals(that.used) && Objects.equals(expirationDate, that.expirationDate) && userEmail.equals(that.userEmail);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(id, value, type, used, expirationDate, userEmail);
     }
 }
 

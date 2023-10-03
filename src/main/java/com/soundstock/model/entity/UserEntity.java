@@ -35,12 +35,12 @@ public class UserEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        UserEntity userEntity = (UserEntity) o;
-        return getId() != null && Objects.equals(getId(), userEntity.getId());
+        if (!(o instanceof UserEntity that)) return false;
+        return isEnabled == that.isEnabled && id.equals(that.id) && username.equals(that.username) && email.equals(that.email) && password.equals(that.password) && Objects.equals(joinDate, that.joinDate) && Objects.equals(modificationDate, that.modificationDate) && role == that.role;
     }
+
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(id, username, email, password, isEnabled, joinDate, modificationDate, role);
     }
 }
