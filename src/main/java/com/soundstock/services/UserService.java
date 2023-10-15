@@ -1,5 +1,7 @@
 package com.soundstock.services;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.soundstock.enums.TokenType;
 import com.soundstock.enums.UserRole;
 import com.soundstock.exceptions.ExpiredDate;
@@ -16,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.soundstock.exceptions.ErrorMessages.ENTITY_EXISTS;
@@ -38,6 +42,18 @@ public class UserService {
         userRepository.save(userMapper.mapToUserEntity(user));
 
         return createAndStoreRegistrationToken(user.getEmail()).getValue();
+    }
+
+    @Transactional
+    public String loginWithJWT(User user){
+        Optional<UserEntity> existingUser = userRepository.findByUsername(user.getUsername());
+        if (existingUser.isEmpty()){
+            throw new RuntimeException(USER_NOT_FOUND);
+        }
+        if (!existingUser.get().getPassword().equals(user.getPassword())) {
+            throw new RuntimeException("Incorrect password");
+        }
+        return generateToken(user);
     }
 
     public void confirmUser(String tokenValue) {
@@ -66,5 +82,16 @@ public class UserService {
         TokenEntity tokenEntity = new TokenEntity(UUID.randomUUID().toString(), TokenType.REGISTRATION, email);
         tokenRepository.save(tokenEntity);
         return tokenEntity;
+    }
+
+    private String generateToken(User user){
+        long currentTimeMillis = System.currentTimeMillis();
+        Algorithm algorithm = Algorithm.HMAC256("secretpassword");
+        return JWT.create()
+                .withSubject(user.getUsername())
+                .withClaim("role", String.valueOf(user.getRole()))
+                .withIssuedAt(new Date(currentTimeMillis))
+                .withExpiresAt(new Date(currentTimeMillis + 20000))
+                .sign(algorithm);
     }
 }

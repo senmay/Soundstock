@@ -1,6 +1,7 @@
 package com.soundstock.controller;
 
 import com.soundstock.mapper.UserMapper;
+import com.soundstock.model.User;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,4 +26,18 @@ public class UserController {
     public void confirmUser(@RequestParam("token") String token) {
         userService.confirmUser(token);
     }
+
+    @GetMapping("/jwt")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public String securedEndpoint(){
+        return "jwt secured";
+    }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public String login(@RequestBody User user){
+        return userService.loginWithJWT(user);
+    }
+
+
 }

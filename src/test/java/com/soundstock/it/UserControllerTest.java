@@ -4,7 +4,6 @@ import com.soundstock.enums.UserRole;
 import com.soundstock.mapper.UserMapper;
 import com.soundstock.mapper.UserMapperImpl;
 import com.soundstock.model.dto.UserDTO;
-import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,12 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -97,9 +94,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDTO)))
                 .andExpect(status().isBadRequest());
-
     }
-
     @Test
     void testConfirmUser() throws Exception {
         // given
@@ -110,8 +105,5 @@ class UserControllerTest {
                         .param("token", token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
     }
-
-
 }
