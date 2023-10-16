@@ -4,6 +4,7 @@ import com.soundstock.mapper.UserMapper;
 import com.soundstock.model.User;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.services.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +36,8 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public String login(@RequestBody User user){
-        return userService.loginWithJWT(user);
+    public String login(@RequestBody User user, HttpServletResponse response){
+        return userService.loginWithJWT(user, response);
     }
 
 
