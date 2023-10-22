@@ -1,7 +1,7 @@
 package com.soundstock.services;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.config.types.Password;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -19,10 +20,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        log.info("Authenticating user with name: {}", authentication.getName());
         UserDetails userDetails = userService.loadUserByUsername(authentication.getName());
         if (userDetails != null && passwordEncoder.matches(authentication.getCredentials().toString(),userDetails.getPassword())){
+            log.info("Authentication successful for user: {}", authentication.getName());
             return new UsernamePasswordAuthenticationToken(authentication.getName(), authentication.getCredentials().toString(), userDetails.getAuthorities());
         } else {
+            log.warn("Bad credentials for user: {}", authentication.getName());
             throw new BadCredentialsException("Bad credentials");
         }
     }

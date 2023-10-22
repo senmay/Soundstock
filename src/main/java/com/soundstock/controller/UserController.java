@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("user/v1")
@@ -30,15 +32,22 @@ public class UserController {
 
     @GetMapping("/jwt")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public String securedEndpoint(){
+    public String securedEndpoint() {
         return "jwt secured";
     }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public String login(@RequestBody User user, HttpServletResponse response){
+    public String login(@RequestBody UserDTO userDTO, HttpServletResponse response) {
+        User user = userMapper.mapToUser(userDTO);
         return userService.loginWithJWT(user, response);
     }
 
-
+    @GetMapping("/userlist")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDTO> getAllUsers() {
+        List<User> userList = userService.getAllUsers();
+        return userMapper.mapToUserDTOList(userList);
+    }
 }
+

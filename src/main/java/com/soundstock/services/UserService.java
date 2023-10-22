@@ -14,7 +14,6 @@ import com.soundstock.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -67,22 +66,16 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public String loginWithJWT(User user, HttpServletResponse response){
-//        Optional<UserEntity> existingUser = userRepository.findByUsername(user.getUsername());
-//        if (existingUser.isEmpty()){
-//            throw new RuntimeException(USER_NOT_FOUND);
-//        }
-//        if (!existingUser.get().getPassword().equals(user.getPassword())) {
-//            throw new RuntimeException("Incorrect password");
-//        }
-//        return generateToken(user);
+    public String loginWithJWT(User user, HttpServletResponse response) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        String token = generateToken(user);
+        UserEntity authenticatedUser = userRepository.findByUsername(user.getUsername()).get();
+        String token = generateToken(userMapper.mapToUser(authenticatedUser));
         response.addHeader("JWT_token", token);
+        log.info("Role for user " + user.getUsername() + ": " + authenticatedUser.getRole());
         return "Logged in";
-
     }
+
 
     public void confirmUser(String tokenValue) {
         TokenEntity tokenEntity = tokenRepository.findByValue(tokenValue)
@@ -112,25 +105,33 @@ public class UserService implements UserDetailsService {
         return tokenEntity;
     }
 
-    private String generateToken(User user){
+    private String generateToken(User user) {
         long currentTimeMillis = System.currentTimeMillis();
         Algorithm algorithm = Algorithm.HMAC256("secretpassword");
+        System.out.println(user.getRole());
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withClaim("role", String.valueOf(user.getRole()))
                 .withIssuedAt(new Date(currentTimeMillis))
-                .withExpiresAt(new Date(currentTimeMillis + 20000))
+                .withExpiresAt(new Date(currentTimeMillis + 200000))
                 .sign(algorithm);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("Loading user by username: {}", username);
         Optional<UserEntity> byUsername = userRepository.findByUsername(username);
-        if (byUsername.isEmpty()){
+        if (byUsername.isEmpty()) {
+            log.warn("User not found for username: {}", username);
             throw new UsernameNotFoundException(USER_NOT_FOUND);
         }
+        log.info("User found: {}", byUsername.get());
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(byUsername.get().getRole().toString()));
-        return new org.springframework.security.core.userdetails.User(username,byUsername.get().getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(username, byUsername.get().getPassword(), authorities);
+    }
+
+    public List<User> getAllUsers() {
+        return userMapper.mapToUserList(userRepository.findAll());
     }
 }
