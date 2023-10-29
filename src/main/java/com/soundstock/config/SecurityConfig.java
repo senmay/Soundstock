@@ -22,6 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final String[] whiteListedEndpoints = {"/user/v1/register", "/user/v1/confirm", "/user/v1/login"};
+    private final String[] endpointsWithOnlyAdminPrivileges = {"/user/v1/userlist"};
+    private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt"};
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";
     private final UserService userService;
@@ -35,9 +37,9 @@ public class SecurityConfig {
                     request
                             .requestMatchers(whiteListedEndpoints).permitAll();
                     request
-                            .requestMatchers("/user/v1/jwt").hasAnyAuthority(USER,ADMIN);
+                            .requestMatchers(endpointsWithOnlyUserPrivileges).hasAnyAuthority(USER,ADMIN);
                     request
-                            .requestMatchers("/user/v1/userlist").hasAnyAuthority(ADMIN);
+                            .requestMatchers(endpointsWithOnlyAdminPrivileges).hasAnyAuthority(ADMIN);
                 }).authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

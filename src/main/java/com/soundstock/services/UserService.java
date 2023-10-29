@@ -7,6 +7,7 @@ import com.soundstock.enums.UserRole;
 import com.soundstock.exceptions.ExpiredDate;
 import com.soundstock.mapper.UserMapper;
 import com.soundstock.model.User;
+import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.TokenEntity;
 import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.TokenRepository;
@@ -53,7 +54,8 @@ public class UserService implements UserDetailsService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public String registerUser(User user) {
+    public String registerUser(UserDTO userDTO) {
+        User user = userMapper.mapToUser(userDTO);
 
         if (userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail())) {
             throw new EntityExistsException(ENTITY_EXISTS);
@@ -66,11 +68,20 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public String loginWithJWT(User user, HttpServletResponse response) {
+    public String loginWithJWT(UserDTO userDTO, HttpServletResponse response) {
+        User user = userMapper.mapToUser(userDTO);
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         UserEntity authenticatedUser = userRepository.findByUsername(user.getUsername()).get();
         String token = generateToken(userMapper.mapToUser(authenticatedUser));
+
+        // Deactivate all previous JWT tokens for this user
+        deactivateAllTokenForUser(authenticatedUser.getEmail());
+
+        // Save new JWT token in the database
+        TokenEntity jwtTokenEntity = new TokenEntity(token, TokenType.BEARER, authenticatedUser.getEmail());
+        tokenRepository.save(jwtTokenEntity);
+
         response.addHeader("JWT_token", token);
         log.info("Role for user " + user.getUsername() + ": " + authenticatedUser.getRole());
         return "Logged in";
@@ -133,5 +144,13 @@ public class UserService implements UserDetailsService {
 
     public List<User> getAllUsers() {
         return userMapper.mapToUserList(userRepository.findAll());
+    }
+
+    private void deactivateAllTokenForUser(String email) {
+        List<TokenEntity> tokens = tokenRepository.findByUserEmailAndTypeAndUsed(email,TokenType.BEARER, false);
+        for(TokenEntity token: tokens){
+            token.setUsed(true);
+        }
+        tokenRepository.saveAll(tokens);
     }
 }

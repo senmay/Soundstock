@@ -21,13 +21,13 @@ public class UserController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public String registerUser(@RequestBody UserDTO userDTO) {
-        return userService.registerUser(userMapper.mapToUser(userDTO));
+        return userService.registerUser(userDTO);
     }
-
     @PostMapping("/confirm")
     @ResponseStatus(HttpStatus.OK)
-    public void confirmUser(@RequestParam("token") String token) {
+    public String confirmUser(@RequestParam("token") String token) {
         userService.confirmUser(token);
+        return "User verified successfully";
     }
 
     @GetMapping("/jwt")
@@ -39,8 +39,7 @@ public class UserController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public String login(@RequestBody UserDTO userDTO, HttpServletResponse response) {
-        User user = userMapper.mapToUser(userDTO);
-        return userService.loginWithJWT(user, response);
+        return userService.loginWithJWT(userDTO, response);
     }
 
     @GetMapping("/userlist")
