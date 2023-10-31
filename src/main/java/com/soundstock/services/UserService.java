@@ -88,7 +88,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public void confirmUser(String tokenValue) {
+    public String confirmUser(String tokenValue) {
         TokenEntity tokenEntity = tokenRepository.findByValue(tokenValue)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Token"));
 
@@ -108,6 +108,7 @@ public class UserService implements UserDetailsService {
 
         tokenEntity.setUsed(true);
         tokenRepository.save(tokenEntity);
+        return "User verified successfully";
     }
 
     private TokenEntity createAndStoreRegistrationToken(String email) {

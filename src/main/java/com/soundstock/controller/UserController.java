@@ -26,8 +26,7 @@ public class UserController {
     @PostMapping("/confirm")
     @ResponseStatus(HttpStatus.OK)
     public String confirmUser(@RequestParam("token") String token) {
-        userService.confirmUser(token);
-        return "User verified successfully";
+        return userService.confirmUser(token);
     }
 
     @GetMapping("/jwt")

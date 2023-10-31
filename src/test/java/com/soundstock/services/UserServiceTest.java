@@ -39,11 +39,9 @@ public class UserServiceTest {
         UserDTO userDTO = UserDTO.builder().username("existingUsername").email("existingEmail@example.com").build();
         User user = User.builder().username("existingUsername").email("existingEmail@example.com").build();
 
-
         //when
         when(userMapper.mapToUser(userDTO)).thenReturn(user);
         when(userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail())).thenReturn(true);
-
 
         assertThrows(EntityExistsException.class, () -> userService.registerUser(userDTO));
 
