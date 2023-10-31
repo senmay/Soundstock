@@ -15,6 +15,7 @@ import com.soundstock.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,7 +51,6 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }
-
     private final AuthenticationManager authenticationManager;
 
     @Transactional
