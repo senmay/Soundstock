@@ -3,7 +3,6 @@ package com.soundstock.model.entity;
 import com.soundstock.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -24,7 +23,7 @@ public class UserEntity {
     private String username;
     private String email;
     private String password;
-    private boolean isEnabled = false;
+    private boolean enabled = false;
     @CreationTimestamp
     private LocalDateTime joinDate;
     @LastModifiedDate
@@ -36,11 +35,11 @@ public class UserEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserEntity that)) return false;
-        return isEnabled == that.isEnabled && id.equals(that.id) && username.equals(that.username) && email.equals(that.email) && password.equals(that.password) && Objects.equals(joinDate, that.joinDate) && Objects.equals(modificationDate, that.modificationDate) && role == that.role;
+        return enabled == that.enabled && id.equals(that.id) && username.equals(that.username) && email.equals(that.email) && password.equals(that.password) && Objects.equals(joinDate, that.joinDate) && Objects.equals(modificationDate, that.modificationDate) && role == that.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email, password, isEnabled, joinDate, modificationDate, role);
+        return Objects.hash(id, username, email, password, enabled, joinDate, modificationDate, role);
     }
 }

@@ -11,6 +11,6 @@ public class UserDTO {
     String username;
     String email;
     String password;
-    boolean isEnabled = false;
+    boolean enabled;
     UserRole role;
 }

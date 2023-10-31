@@ -1,46 +1,94 @@
 package com.soundstock.services;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.soundstock.enums.TokenType;
 import com.soundstock.enums.UserRole;
 import com.soundstock.exceptions.ExpiredDate;
 import com.soundstock.mapper.UserMapper;
 import com.soundstock.model.User;
+import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.TokenEntity;
 import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.TokenRepository;
 import com.soundstock.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
 
 import static com.soundstock.exceptions.ErrorMessages.ENTITY_EXISTS;
 import static com.soundstock.exceptions.ErrorMessages.USER_NOT_FOUND;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-public class UserService {
+
+public class UserService implements UserDetailsService {
     private final TokenRepository tokenRepository;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(TokenRepository tokenRepository, UserMapper userMapper, UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder, @Lazy AuthenticationManager authenticationManager) {
+        this.tokenRepository = tokenRepository;
+        this.userMapper = userMapper;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+    }
+
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public String registerUser(User user) {
+    public String registerUser(UserDTO userDTO) {
+        User user = userMapper.mapToUser(userDTO);
 
         if (userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail())) {
             throw new EntityExistsException(ENTITY_EXISTS);
         }
-        userRepository.save(userMapper.mapToUserEntity(user));
+        UserEntity userEntity = userMapper.mapToUserEntity(user);
+        userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(userEntity);
 
         return createAndStoreRegistrationToken(user.getEmail()).getValue();
     }
 
-    public void confirmUser(String tokenValue) {
+    @Transactional
+    public String loginWithJWT(UserDTO userDTO, HttpServletResponse response) {
+        User user = userMapper.mapToUser(userDTO);
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        UserEntity authenticatedUser = userRepository.findByUsername(user.getUsername()).get();
+        String token = generateToken(userMapper.mapToUser(authenticatedUser));
+
+        // Deactivate all previous JWT tokens for this user
+        deactivateAllTokenForUser(authenticatedUser.getEmail());
+
+        // Save new JWT token in the database
+        TokenEntity jwtTokenEntity = new TokenEntity(token, TokenType.BEARER, authenticatedUser.getEmail());
+        tokenRepository.save(jwtTokenEntity);
+
+        response.addHeader("JWT_token", token);
+        log.info("Role for user " + user.getUsername() + ": " + authenticatedUser.getRole());
+        return "Logged in";
+    }
+
+
+    public String confirmUser(String tokenValue) {
         TokenEntity tokenEntity = tokenRepository.findByValue(tokenValue)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Token"));
 
@@ -60,11 +108,50 @@ public class UserService {
 
         tokenEntity.setUsed(true);
         tokenRepository.save(tokenEntity);
+        return "User verified successfully";
     }
 
     private TokenEntity createAndStoreRegistrationToken(String email) {
         TokenEntity tokenEntity = new TokenEntity(UUID.randomUUID().toString(), TokenType.REGISTRATION, email);
         tokenRepository.save(tokenEntity);
         return tokenEntity;
+    }
+
+    private String generateToken(User user) {
+        long currentTimeMillis = System.currentTimeMillis();
+        Algorithm algorithm = Algorithm.HMAC256("secretpassword");
+        System.out.println(user.getRole());
+        return JWT.create()
+                .withSubject(user.getUsername())
+                .withClaim("role", String.valueOf(user.getRole()))
+                .withIssuedAt(new Date(currentTimeMillis))
+                .withExpiresAt(new Date(currentTimeMillis + 200000))
+                .sign(algorithm);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("Loading user by username: {}", username);
+        Optional<UserEntity> byUsername = userRepository.findByUsername(username);
+        if (byUsername.isEmpty()) {
+            log.warn("User not found for username: {}", username);
+            throw new UsernameNotFoundException(USER_NOT_FOUND);
+        }
+        log.info("User found: {}", byUsername.get());
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(byUsername.get().getRole().toString()));
+        return new org.springframework.security.core.userdetails.User(username, byUsername.get().getPassword(), authorities);
+    }
+
+    public List<User> getAllUsers() {
+        return userMapper.mapToUserList(userRepository.findAll());
+    }
+
+    private void deactivateAllTokenForUser(String email) {
+        List<TokenEntity> tokens = tokenRepository.findByUserEmailAndTypeAndUsed(email,TokenType.BEARER, false);
+        for(TokenEntity token: tokens){
+            token.setUsed(true);
+        }
+        tokenRepository.saveAll(tokens);
     }
 }
