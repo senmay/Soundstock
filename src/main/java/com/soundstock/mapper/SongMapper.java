@@ -16,6 +16,10 @@ public interface SongMapper {
     SongEntity mapToSongEntity(Song song);
     List<SongEntity> mapToSongEntityList(List<Song> songs);
     List<Song> mapToSongList(List<SongEntity> songsEntity);
+    List<SongDTO> mapSongEntityToDTOList(List<SongEntity> songEntities);
+    SongDTO mapSongEntityToSongDTO(SongEntity songEntity);
+    SongEntity mapSongDTOtoSongEntity(SongDTO songDTO);
+    List<SongEntity> mapSongDTOtoSongEntityList(List<SongDTO> songDTOS);
 
 
 }

@@ -10,9 +10,9 @@ import java.util.List;
 public class Album {
     private Long id;
     private String title;
-    private String artist;
+    private Artist artist;
     private String genre;
-    private String year;
+    private Integer year;
     private List<Song> songs;
     private String image;
     private String description;

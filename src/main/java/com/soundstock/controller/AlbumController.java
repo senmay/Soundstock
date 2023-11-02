@@ -27,7 +27,6 @@ public class AlbumController {
     }
     @GetMapping("/{id}")
     public AlbumDTO getAlbumById(@PathVariable Long id) {
-
         return albumService.getAlbumById(id);
     }
     @PutMapping("/{id}")

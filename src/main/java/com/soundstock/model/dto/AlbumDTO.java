@@ -9,10 +9,8 @@ import java.util.List;
 public class AlbumDTO {
     Long id;
     String title;
-    String artist;
+    ArtistDTO artist;
     String genre;
-    String year;
+    Integer year;
     List<SongDTO> songs;
-
-
 }

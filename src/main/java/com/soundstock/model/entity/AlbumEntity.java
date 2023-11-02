@@ -17,13 +17,13 @@ import java.util.List;
 public class AlbumEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long Id;
+    private Long d;
     private String title;
     @ManyToOne
     @JoinColumn(name = "artist_Id")
     private ArtistEntity artist;
     private String genre;
-    private String year;
+    private Integer year;
     @OneToMany(mappedBy = "album")
     private List<SongEntity> songs;
     String image;

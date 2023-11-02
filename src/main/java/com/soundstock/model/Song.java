@@ -8,7 +8,7 @@ import lombok.Data;
 public class Song {
     private Long id;
     private String title;
-    private String artist;
+    private Artist artist;
     private Integer duration;
     private Album album;
 

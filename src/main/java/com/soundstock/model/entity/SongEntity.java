@@ -13,9 +13,11 @@ import lombok.*;
 public class SongEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long Id;
+    private Long id;
     private String title;
-    private String artist;
+    @ManyToOne
+    @JoinColumn(name ="artist_id")
+    private ArtistEntity artist;
     private Integer duration;
     @ManyToOne(optional = true)
     @JoinColumn(name = "album_Id")

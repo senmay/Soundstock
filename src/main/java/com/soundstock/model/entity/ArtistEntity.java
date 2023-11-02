@@ -15,7 +15,7 @@ import java.util.List;
 public class ArtistEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long Id;
+    private Long id;
     private String name;
     @OneToMany(mappedBy = "artist")
     private List<AlbumEntity> albums;
