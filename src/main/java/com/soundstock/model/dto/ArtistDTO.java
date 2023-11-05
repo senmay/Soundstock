@@ -6,8 +6,8 @@ import java.util.List;
 
 @Value
 public class ArtistDTO {
-    private Long id;
-    private String name;
-    private String image;
-    private List<AlbumDTO> album;
+    Long id;
+    String name;
+    String image;
+    List<AlbumDTO> album;
 }

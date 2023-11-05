@@ -21,8 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final String[] whiteListedEndpoints = {"/user/v1/register", "/user/v1/confirm", "/user/v1/login", "/song/v1/getAll"};
-    private final String[] endpointsWithOnlyAdminPrivileges = {"/user/v1/userlist"};
+    private final String[] whiteListedEndpoints = {"/user/v1/register", "/user/v1/confirm", "/user/v1/login", "/song/v1/getAll", "/song/v1/getSong"};
+    private final String[] endpointsWithOnlyAdminPrivileges = {"/user/v1/userlist", "/song/v1/add"};
     private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt"};
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";

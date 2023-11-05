@@ -3,24 +3,23 @@ package com.soundstock.testdata;
 import com.github.javafaker.Faker;
 import com.soundstock.mapper.SongMapper;
 import com.soundstock.mapper.SongMapperImpl;
-import com.soundstock.model.dto.ArtistDTO;
 import com.soundstock.model.dto.SongDTO;
 import com.soundstock.model.entity.SongEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public interface SongProvider {
+public interface SongProvider extends ArtistProvider {
     SongMapper songMapper = new SongMapperImpl();
     Faker faker = new Faker();
 
     default SongDTO provideRandomSong() {
         return new SongDTO(
-                faker.number().randomNumber(), // ID
-                faker.rockBand().name(), // Title
-                null, //Artist set as null
+                faker.number().randomNumber(),
+                faker.rockBand().name(),
+                provideArtistDTO(),
                 faker.number().numberBetween(120, 300), // Duration in seconds
-                null // Album set as null
+                null //temporary null for album
         );
     }
 

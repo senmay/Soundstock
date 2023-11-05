@@ -1,6 +1,5 @@
 package com.soundstock.controller;
 
-import com.soundstock.mapper.SongMapper;
 import com.soundstock.model.dto.SongDTO;
 import com.soundstock.services.SongService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import java.util.List;
 @Slf4j
 @RequestMapping("song/v1")
 public class SongController {
-    private final SongMapper songMapper;
     private final SongService songService;
 
     @PostMapping("/add")
@@ -33,5 +31,10 @@ public class SongController {
     public SongDTO getSongByTitleAndArtist(@PathVariable String title){
         return songService.getSongByTitle(title);
     }
+
+    //TODO stworzyc kontroler dla artistow
+    //TODO dodawanie obrazkow
+
+
 }
 

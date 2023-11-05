@@ -21,6 +21,4 @@ public class ObjectNotFound extends RuntimeException{
         String sourceClassName = sourceClass != null ? sourceClass.getSimpleName() : "Unknown";
         return "Exception thrown in class: " + sourceClassName + ". " + super.getMessage();
     }
-
-
 }

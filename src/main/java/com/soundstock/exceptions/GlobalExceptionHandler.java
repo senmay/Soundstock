@@ -19,4 +19,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(INCORRECT_CREDENTIALS,HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ObjectNotFound.class)
+    public ResponseEntity<String> handleObjectNotFound(ObjectNotFound ex){
+        log.info(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
 }

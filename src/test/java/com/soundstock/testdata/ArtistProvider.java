@@ -1,8 +1,6 @@
 package com.soundstock.testdata;
 
 import com.github.javafaker.Faker;
-import com.soundstock.mapper.AlbumMapper;
-import com.soundstock.mapper.AlbumMapperImpl;
 import com.soundstock.mapper.ArtistMapper;
 import com.soundstock.mapper.ArtistMapperImpl;
 import com.soundstock.model.dto.AlbumDTO;
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ArtistProvider {
-    AlbumMapper albumMapper = new AlbumMapperImpl();
     ArtistMapper artistMapper = new ArtistMapperImpl();
     Faker faker = new Faker();
 

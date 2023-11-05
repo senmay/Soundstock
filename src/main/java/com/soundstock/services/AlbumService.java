@@ -2,7 +2,6 @@ package com.soundstock.services;
 
 import com.soundstock.exceptions.ObjectNotFound;
 import com.soundstock.mapper.AlbumMapper;
-import com.soundstock.model.Album;
 import com.soundstock.model.dto.AlbumDTO;
 import com.soundstock.model.entity.AlbumEntity;
 import com.soundstock.repository.AlbumRepository;
@@ -38,5 +37,7 @@ public class AlbumService {
             throw new ObjectNotFound("Album not found with id: " + id, getClass());
         }
     }
+    //TODO assign song to album
+
 
 }
