@@ -88,7 +88,7 @@ class UserControllerTest {
 //        String sql = "INSERT INTO users (id, is_enabled, email, username) VALUES (1, false, '" + userDTO.getEmail() + "', '" + userDTO.getUsername() + "');";
 //        PreparedStatement preparedStatement = connection.prepareStatement(sql);
 //        preparedStatement.execute();
-        userRepository.save(userMapper.mapToUserEntity(userMapper.mapToUser(userDTO)));
+        userRepository.save(userMapper.mapToUserEntity(userDTO));
 
         mockMvc.perform(post("/user/v1/register")
                         .contentType(MediaType.APPLICATION_JSON)

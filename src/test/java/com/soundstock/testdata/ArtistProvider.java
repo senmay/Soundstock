@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ArtistProvider {
+    //todo refactor to resourcefactory class
     ArtistMapper artistMapper = new ArtistMapperImpl();
     Faker faker = new Faker();
 

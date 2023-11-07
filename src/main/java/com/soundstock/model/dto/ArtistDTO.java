@@ -9,5 +9,5 @@ public class ArtistDTO {
     Long id;
     String name;
     String image;
-    List<AlbumDTO> album;
+    List<AlbumDTO> albums;
 }

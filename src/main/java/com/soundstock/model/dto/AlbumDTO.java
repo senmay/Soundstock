@@ -1,6 +1,5 @@
 package com.soundstock.model.dto;
 
-import com.soundstock.model.Song;
 import lombok.Value;
 
 import java.util.List;
@@ -13,4 +12,6 @@ public class AlbumDTO {
     String genre;
     Integer year;
     List<SongDTO> songs;
+    String image;
+    String description;
 }

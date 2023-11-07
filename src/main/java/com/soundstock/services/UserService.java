@@ -6,7 +6,6 @@ import com.soundstock.enums.TokenType;
 import com.soundstock.enums.UserRole;
 import com.soundstock.exceptions.ExpiredDate;
 import com.soundstock.mapper.UserMapper;
-import com.soundstock.model.User;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.TokenEntity;
 import com.soundstock.model.entity.UserEntity;
@@ -15,7 +14,6 @@ import com.soundstock.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -55,25 +53,23 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public String registerUser(UserDTO userDTO) {
-        User user = userMapper.mapToUser(userDTO);
 
-        if (userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail())) {
+        if (userRepository.existsByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail())) {
             throw new EntityExistsException(ENTITY_EXISTS);
         }
-        UserEntity userEntity = userMapper.mapToUserEntity(user);
-        userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+        UserEntity userEntity = userMapper.mapToUserEntity(userDTO);
+        userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(userEntity);
 
-        return createAndStoreRegistrationToken(user.getEmail()).getValue();
+        return createAndStoreRegistrationToken(userDTO.getEmail()).getValue();
     }
 
     @Transactional
     public String loginWithJWT(UserDTO userDTO, HttpServletResponse response) {
-        User user = userMapper.mapToUser(userDTO);
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        UserEntity authenticatedUser = userRepository.findByUsername(user.getUsername()).get();
-        String token = generateToken(userMapper.mapToUser(authenticatedUser));
+        UserEntity authenticatedUser = userRepository.findByUsername(userDTO.getUsername()).get();
+        String token = generateToken(authenticatedUser);
 
         // Deactivate all previous JWT tokens for this user
         deactivateAllTokenForUser(authenticatedUser.getEmail());
@@ -83,7 +79,7 @@ public class UserService implements UserDetailsService {
         tokenRepository.save(jwtTokenEntity);
 
         response.addHeader("JWT_token", token);
-        log.info("Role for user " + user.getUsername() + ": " + authenticatedUser.getRole());
+        log.info("Role for user " + userDTO.getUsername() + ": " + authenticatedUser.getRole());
         return "Logged in";
     }
 
@@ -117,10 +113,10 @@ public class UserService implements UserDetailsService {
         return tokenEntity;
     }
 
-    private String generateToken(User user) {
+    private String generateToken(UserEntity user) {
         long currentTimeMillis = System.currentTimeMillis();
+        //todo hide password
         Algorithm algorithm = Algorithm.HMAC256("secretpassword");
-        System.out.println(user.getRole());
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withClaim("role", String.valueOf(user.getRole()))
@@ -143,7 +139,7 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(username, byUsername.get().getPassword(), authorities);
     }
 
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userMapper.mapToUserList(userRepository.findAll());
     }
 

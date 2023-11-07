@@ -16,15 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SongServiceTest implements SongProvider {
     //TODO run mapper tests before running this class
+
     private SongService songService;
     @Mock
     private SongRepository songRepository;
@@ -35,7 +34,7 @@ public class SongServiceTest implements SongProvider {
     @BeforeEach
     void setUp() {
         // Inject mocks into SongService
-        songService = new SongService(songRepository,songMapper,artistService);
+        songService = new SongService(songRepository, songMapper, artistService);
     }
 
 
@@ -100,6 +99,7 @@ public class SongServiceTest implements SongProvider {
         assertEquals("Song added", result);
         verify(songRepository).save(any(SongEntity.class));
     }
+
     @Test
     public void test_addSong_existingSong() {
         // Given

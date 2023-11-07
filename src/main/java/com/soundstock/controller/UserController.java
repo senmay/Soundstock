@@ -1,7 +1,6 @@
 package com.soundstock.controller;
 
 import com.soundstock.mapper.UserMapper;
-import com.soundstock.model.User;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.services.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +16,6 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -45,8 +43,7 @@ public class UserController {
     @GetMapping("/userlist")
     @ResponseStatus(HttpStatus.OK)
     public List<UserDTO> getAllUsers() {
-        List<User> userList = userService.getAllUsers();
-        return userMapper.mapToUserDTOList(userList);
+        return userService.getAllUsers();
     }
 }
 
