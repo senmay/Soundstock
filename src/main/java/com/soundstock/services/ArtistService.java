@@ -4,7 +4,7 @@ import com.soundstock.exceptions.ObjectNotFound;
 import com.soundstock.mapper.ArtistMapper;
 import com.soundstock.model.dto.ArtistDTO;
 import com.soundstock.model.entity.ArtistEntity;
-import com.soundstock.repository.AristRepository;
+import com.soundstock.repository.ArtistRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class ArtistService {
-    private final AristRepository artistRepository;
+    private final ArtistRepository artistRepository;
     private final ArtistMapper artistMapper;
 
     public List<ArtistDTO> getAllArtists() {

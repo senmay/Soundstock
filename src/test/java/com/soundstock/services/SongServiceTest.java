@@ -6,7 +6,7 @@ import com.soundstock.mapper.SongMapperImpl;
 import com.soundstock.model.dto.SongDTO;
 import com.soundstock.model.entity.SongEntity;
 import com.soundstock.repository.SongRepository;
-import com.soundstock.testdata.SongProvider;
+import com.soundstock.testdata.ResourceFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,15 +21,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class SongServiceTest implements SongProvider {
-    //TODO run mapper tests before running this class
-
+public class SongServiceTest extends ResourceFactory {
     private SongService songService;
     @Mock
     private SongRepository songRepository;
     @Mock
     private ArtistService artistService;
-    private SongMapper songMapper = new SongMapperImpl();
+    private final SongMapper songMapper = new SongMapperImpl();
 
     @BeforeEach
     void setUp() {
