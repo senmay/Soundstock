@@ -5,6 +5,8 @@ import com.soundstock.mapper.UserMapper;
 import com.soundstock.mapper.UserMapperImpl;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -23,15 +26,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@Import(TestSecurityConfig.class)
 @AutoConfigureMockMvc
-//@WebMvcTest(controllers = UserController.class)
-
+@Transactional
 class UserControllerTest {
     static Connection connection;
     @Autowired
@@ -46,8 +48,9 @@ class UserControllerTest {
             .withPassword("password")
             .withExposedPorts(5432)
             .withInitScript("init.sql");
+
     @DynamicPropertySource
-    static void dynamicPropertyRegistry(DynamicPropertyRegistry registry){
+    static void dynamicPropertyRegistry(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", () -> postgres.getJdbcUrl());
         registry.add("spring.datasource.username", () -> postgres.getUsername());
         registry.add("spring.datasource.password", () -> postgres.getPassword());
@@ -55,7 +58,7 @@ class UserControllerTest {
 
     @BeforeAll
     static void beforeAll() throws SQLException {
-        connection = DriverManager.getConnection(postgres.getJdbcUrl(),postgres.getUsername(), postgres.getPassword());
+        connection = DriverManager.getConnection(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
         postgres.start();
     }
 
@@ -63,19 +66,19 @@ class UserControllerTest {
     void testRegisterUser() throws Exception {
         //given
         UserDTO userDTO = UserDTO.builder()
-                .username("dominik")
-                .email("a@wp.pl")
+                .username("test1")
+                .email("test1@wp.pl")
                 .password("password")
-                .role(UserRole.USER)
-                .id(1L)
                 .build();
 
         //then
+        // zapytać się o przekazywanie tokenu
         mockMvc.perform(post("/user/v1/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDTO)))
                 .andExpect(status().isCreated());
     }
+
     @Test
     void should_throw_exception_because_username_exists() throws Exception {
         UserDTO userDTO = UserDTO.builder()
@@ -93,15 +96,101 @@ class UserControllerTest {
                         .content(new ObjectMapper().writeValueAsString(userDTO)))
                 .andExpect(status().isBadRequest());
     }
-    @Test
-    void testConfirmUser() throws Exception {
-        // given
-        String token = "someToken";
 
-        // when & then
+    @Test
+    public void testRegistrationAndConfirmationFlow() throws Exception {
+        UserDTO userDTO = UserDTO.builder()
+                .username("test2")
+                .email("test2@wp.pl")
+                .password("password")
+                .build();
+
+        MvcResult registrationResult = mockMvc.perform(post("/user/v1/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDTO)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        // Pobranie tokena z odpowiedzi rejestracji
+        String token = registrationResult.getResponse().getContentAsString();
+
+        // Wykonanie żądania potwierdzenia z użytym tokenem
         mockMvc.perform(post("/user/v1/confirm")
                         .param("token", token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void testLogin() throws Exception {
+        UserDTO userDTO = UserDTO.builder()
+                .username("test3")
+                .email("test3@wp.pl")
+                .password("password")
+                .build();
+
+        MvcResult registrationResult = mockMvc.perform(post("/user/v1/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDTO)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        // Pobranie tokena z odpowiedzi rejestracji
+        String token = registrationResult.getResponse().getContentAsString();
+
+        // Wykonanie żądania potwierdzenia z użytym tokenem
+        MvcResult confirmationResult = mockMvc.perform(post("/user/v1/confirm")
+                        .param("token", token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        mockMvc.perform(post("/user/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDTO)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testLoginWithWrongCredentials() throws Exception {
+        // Użytkownik z błędnymi danymi
+        UserDTO wrongUserDTO = UserDTO.builder()
+                .email("wrongEmail")
+                .password("wrongPassword")
+                .username("wrongUsername")
+                .build();
+
+        // Próba logowania z błędnymi danymi
+        mockMvc.perform(post("/user/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(wrongUserDTO)))
+                .andExpect(status().isBadRequest());//zapytać się o błędy
+    }
+
+    @Test
+    public void testGetAllUsersAsAdmin() throws Exception {
+        UserDTO adminLogin = UserDTO.builder()
+                .username("A")
+                .password("password")
+                .email("admin@wp.pl")
+                .build();
+
+        // Logowanie jako admin i pobranie tokenu JWT
+        MvcResult loginResult = mockMvc.perform(post("/user/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(adminLogin)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String adminToken = loginResult.getResponse().getHeader("JWT_token");
+        System.out.println(adminToken);
+
+        // Wykonanie żądania do endpointu z tokenem JWT w nagłówku
+        mockMvc.perform(get("/user/v1/userlist")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", Matchers.equalTo(1)))
+                .andExpect(jsonPath("$[0].username", Matchers.equalTo("A")));
+    }
 }
+

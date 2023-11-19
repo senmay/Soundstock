@@ -1,8 +1,6 @@
 package com.soundstock.services;
 
 import com.soundstock.enums.UserRole;
-import com.soundstock.mapper.UserMapper;
-import com.soundstock.mapper.UserMapperImpl;
 import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -28,6 +26,5 @@ public class DummyDataLoader {
         List<UserEntity> users = List.of(admin,user1,user2);
         userRepository.saveAll(users);
         System.out.println("Load users into database");
-
     }
 }

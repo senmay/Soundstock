@@ -15,6 +15,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +38,8 @@ import static com.soundstock.exceptions.ErrorMessages.USER_NOT_FOUND;
 @Service
 
 public class UserService implements UserDetailsService {
+    @Value("$jwt.secret")
+    private String secretKey;
     private final TokenRepository tokenRepository;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
@@ -115,8 +118,7 @@ public class UserService implements UserDetailsService {
 
     private String generateToken(UserEntity user) {
         long currentTimeMillis = System.currentTimeMillis();
-        //todo hide password
-        Algorithm algorithm = Algorithm.HMAC256("secretpassword");
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withClaim("role", String.valueOf(user.getRole()))

@@ -32,7 +32,6 @@ public class SongController {
         return songService.getSongByTitle(title);
     }
 
-    //TODO stworzyc kontroler dla artistow
     //TODO dodawanie obrazkow
 
 
