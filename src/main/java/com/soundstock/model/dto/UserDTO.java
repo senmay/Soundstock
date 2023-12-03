@@ -4,6 +4,8 @@ import com.soundstock.enums.UserRole;
 import lombok.Builder;
 import lombok.Value;
 
+import java.math.BigDecimal;
+
 @Value
 @Builder
 public class UserDTO {
@@ -13,4 +15,5 @@ public class UserDTO {
     String password;
     boolean enabled;
     UserRole role;
+    BigDecimal balance;
 }

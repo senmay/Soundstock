@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.soundstock.enums.TokenType;
 import com.soundstock.enums.UserRole;
 import com.soundstock.exceptions.ExpiredDate;
+import com.soundstock.exceptions.ObjectNotFound;
 import com.soundstock.mapper.UserMapper;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.TokenEntity;
@@ -123,7 +124,7 @@ public class UserService implements UserDetailsService {
                 .withSubject(user.getUsername())
                 .withClaim("role", String.valueOf(user.getRole()))
                 .withIssuedAt(new Date(currentTimeMillis))
-                .withExpiresAt(new Date(currentTimeMillis + 200000))
+                .withExpiresAt(new Date(currentTimeMillis + 20000000))
                 .sign(algorithm);
     }
 
@@ -133,7 +134,7 @@ public class UserService implements UserDetailsService {
         Optional<UserEntity> byUsername = userRepository.findByUsername(username);
         if (byUsername.isEmpty()) {
             log.warn("User not found for username: {}", username);
-            throw new UsernameNotFoundException(USER_NOT_FOUND);
+            throw new ObjectNotFound(USER_NOT_FOUND);
         }
         log.info("User found: {}", byUsername.get());
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();

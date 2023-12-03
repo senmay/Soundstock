@@ -6,7 +6,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Builder
@@ -24,12 +26,15 @@ public class UserEntity {
     private String email;
     private String password;
     private boolean enabled = false;
+    private BigDecimal balance;
     @CreationTimestamp
     private LocalDateTime joinDate;
     @LastModifiedDate
     private LocalDateTime modificationDate;
     @Enumerated(EnumType.STRING)
     private UserRole role;
+    @OneToMany(mappedBy = "user")
+    private List<OrderEntity> orders;
 
     @Override
     public boolean equals(Object o) {

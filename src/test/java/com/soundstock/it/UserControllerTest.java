@@ -33,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Transactional
 class UserControllerTest {
     static Connection connection;
     @Autowired
@@ -72,7 +71,6 @@ class UserControllerTest {
                 .build();
 
         //then
-        // zapytać się o przekazywanie tokenu
         mockMvc.perform(post("/user/v1/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDTO)))
@@ -86,7 +84,6 @@ class UserControllerTest {
                 .email("a@wp.pl")
                 .password("password")
                 .role(UserRole.USER)
-                .id(1L)
                 .build();
 
         userRepository.save(userMapper.mapToUserEntity(userDTO));
@@ -98,7 +95,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testRegistrationAndConfirmationFlow() throws Exception {
+    void testRegistrationAndConfirmationFlow() throws Exception {
         UserDTO userDTO = UserDTO.builder()
                 .username("test2")
                 .email("test2@wp.pl")
@@ -122,7 +119,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testLogin() throws Exception {
+    void testLogin() throws Exception {
         UserDTO userDTO = UserDTO.builder()
                 .username("test3")
                 .email("test3@wp.pl")
@@ -152,7 +149,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testLoginWithWrongCredentials() throws Exception {
+    void testLoginWithWrongCredentials() throws Exception {
         // Użytkownik z błędnymi danymi
         UserDTO wrongUserDTO = UserDTO.builder()
                 .email("wrongEmail")
@@ -168,7 +165,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void testGetAllUsersAsAdmin() throws Exception {
+    void testGetAllUsersAsAdmin() throws Exception {
         UserDTO adminLogin = UserDTO.builder()
                 .username("A")
                 .password("password")
