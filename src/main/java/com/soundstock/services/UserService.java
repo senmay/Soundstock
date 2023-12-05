@@ -13,11 +13,14 @@ import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.TokenRepository;
 import com.soundstock.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,22 +72,25 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public String loginWithJWT(UserDTO userDTO, HttpServletResponse response) {
+    public void loginWithJWT(UserDTO userDTO, HttpServletResponse response) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         UserEntity authenticatedUser = userRepository.findByUsername(userDTO.getUsername()).get();
-        String token = generateToken(authenticatedUser);
+        String accessToken = generateAccessToken(authenticatedUser);
+        String refreshToken = generateRefreshToken(authenticatedUser);
 
         // Deactivate all previous JWT tokens for this user
         deactivateAllTokenForUser(authenticatedUser.getEmail());
 
         // Save new JWT token in the database
-        TokenEntity jwtTokenEntity = new TokenEntity(token, TokenType.BEARER, authenticatedUser.getEmail());
-        tokenRepository.save(jwtTokenEntity);
+        TokenEntity jwtAccessToken = new TokenEntity(accessToken, TokenType.ACCESS, authenticatedUser.getEmail());
+        TokenEntity jwtRefreshToken = new TokenEntity(refreshToken, TokenType.REFRESH, authenticatedUser.getEmail());
+        tokenRepository.save(jwtAccessToken);
+        tokenRepository.save(jwtRefreshToken);
 
-        response.addHeader("JWT_token", token);
+        response.addHeader("Access_token", accessToken);
+        response.addHeader("Refresh_token", refreshToken);
         log.info("Role for user " + userDTO.getUsername() + ": " + authenticatedUser.getRole());
-        return "Logged in";
     }
 
 
@@ -117,15 +123,50 @@ public class UserService implements UserDetailsService {
         return tokenEntity;
     }
 
-    private String generateToken(UserEntity user) {
+    private String generateAccessToken(UserEntity user) {
         long currentTimeMillis = System.currentTimeMillis();
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withClaim("role", String.valueOf(user.getRole()))
                 .withIssuedAt(new Date(currentTimeMillis))
-                .withExpiresAt(new Date(currentTimeMillis + 20000000))
+                .withExpiresAt(new Date(currentTimeMillis + 30000))
                 .sign(algorithm);
+    }
+
+    private String generateRefreshToken(UserEntity user) {
+        long currentTimeMillis = System.currentTimeMillis();
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        return JWT.create()
+                .withSubject(user.getUsername())
+                .withClaim("role", String.valueOf(user.getRole()))
+                .withIssuedAt(new Date(currentTimeMillis))
+                .withExpiresAt(new Date(currentTimeMillis + 604800000))
+                .sign(algorithm);
+    }
+
+    @Transactional
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String refreshToken = request.getHeader("Refresh_token");
+            if (!isRefreshTokenValid(refreshToken)) {
+                throw new IllegalArgumentException("Invalid or expired refresh token");
+            }
+
+            String userEmail = getUserEmailFromRefreshToken(refreshToken);
+            UserEntity user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + userEmail));
+
+            String newAccessToken = generateAccessToken(user);
+            TokenEntity jwtAccessToken = new TokenEntity(newAccessToken, TokenType.ACCESS, user.getEmail());
+            tokenRepository.save(jwtAccessToken);
+
+            response.addHeader("Access_token", newAccessToken);
+
+            return ResponseEntity.ok().body("Access token refreshed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error refreshing token: " + e.getMessage());
+        }
     }
 
     @Override
@@ -152,5 +193,18 @@ public class UserService implements UserDetailsService {
             token.setUsed(true);
         }
         tokenRepository.saveAll(tokens);
+    }
+    public boolean isRefreshTokenValid(String refreshToken) {
+        return tokenRepository.findByValue(refreshToken)
+                .map(tokenEntity ->
+                        !tokenEntity.getUsed() &&
+                                tokenEntity.getExpirationDate().isAfter(LocalDateTime.now()) &&
+                                userRepository.existsByEmail(tokenEntity.getUserEmail()))
+                .orElse(false);
+    }
+    public String getUserEmailFromRefreshToken(String refreshToken) {
+        return tokenRepository.findByValue(refreshToken)
+                .map(TokenEntity::getUserEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
     }
 }
