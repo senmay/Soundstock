@@ -163,7 +163,7 @@ public class UserService implements UserDetailsService {
 
             response.addHeader("Access_token", newAccessToken);
 
-            return ResponseEntity.ok().body("Access token refreshed successfully");
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error refreshing token: " + e.getMessage());
         }

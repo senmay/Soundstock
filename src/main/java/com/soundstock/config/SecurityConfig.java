@@ -26,9 +26,13 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final String[] whiteListedEndpoints = {"/user/v1/register", "/user/v1/confirm", "/user/v1/login", "/song/v1/getAll", "/song/v1/getSong", "/stock/v1/stocklist", "/stock/v1/id","/user/v1/userlist", "/user/v1/refresh"};
+    private final String[] whiteListedEndpoints = {
+            "/user/v1/register", "/user/v1/confirm", "/user/v1/login", "/user/v1/refresh","/user/v1/userlist",
+            "/song/v1/getSong", "/stock/v1/id", "/song/v1/getAll",
+            };
     private final String[] endpointsWithOnlyAdminPrivileges = {"/song/v1/add","/stock/v1/add", "/stock/v1/delete", "/stock/v1/all", "order/v1/all"};
-    private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/order/v1/add", "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test"};
+    private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/order/v1/add",
+            "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test","/stock/v1/stocklist"};
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";
     private final UserService userService;
