@@ -1,10 +1,13 @@
 package com.soundstock.model.dto;
 
-import lombok.Value;
+import lombok.*;
 
 import java.util.List;
 
-@Value
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AlbumDTO {
     Long id;
     String title;

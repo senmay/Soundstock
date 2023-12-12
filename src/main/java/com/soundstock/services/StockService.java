@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.soundstock.exceptions.ErrorMessages.ENTITY_EXISTS;
+import static com.soundstock.exceptions.ErrorMessages.USERNAME_OR_EMAIL_EXISTS;
 
 @Slf4j
 @Service
@@ -23,7 +23,7 @@ public class StockService {
 
     public String createStock(StockDTO stockDTO) {
         if (stockRepository.existsByName(stockDTO.getName())){
-            throw new EntityExistsException(ENTITY_EXISTS);
+            throw new EntityExistsException(USERNAME_OR_EMAIL_EXISTS);
         }
         StockEntity stockEntity = stockMapper.mapDTOToAStockEntity(stockDTO);
         stockRepository.save(stockEntity);

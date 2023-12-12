@@ -7,12 +7,16 @@ import com.soundstock.model.dto.SongDTO;
 import com.soundstock.model.entity.ArtistEntity;
 import com.soundstock.model.entity.SongEntity;
 import com.soundstock.repository.SongRepository;
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.soundstock.exceptions.ErrorMessages.SONG_EXISTS;
+import static com.soundstock.exceptions.ErrorMessages.SONG_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -31,7 +35,14 @@ public class SongService {
     public SongDTO getSongByTitle(String title) {
         Optional<SongEntity> songEntity = songRepository.findByTitle(title);
         if (songEntity.isEmpty()) {
-            throw new ObjectNotFound("Song doesn't exist in database", getClass());
+            throw new ObjectNotFound(SONG_NOT_FOUND, getClass());
+        }
+        return songMapper.mapSongEntityToSongDTO(songEntity.get());
+    }
+    public SongDTO getSongById(Long id) {
+        Optional<SongEntity> songEntity = songRepository.findById(id);
+        if (songEntity.isEmpty()) {
+            throw new ObjectNotFound(SONG_NOT_FOUND, getClass());
         }
         return songMapper.mapSongEntityToSongDTO(songEntity.get());
     }
@@ -48,15 +59,10 @@ public class SongService {
     public void deleteSong(Long id) {
         songRepository.deleteById(id);
     }
-
-    public void deleteAllSongs() {
-        songRepository.deleteAll();
-    }
-
     private void checkIfSongExists(SongDTO songDTO) {
         Optional<SongEntity> existingSong = songRepository.findByTitleAndArtist_Name(songDTO.getTitle(), songDTO.getArtist().getName());
         if (existingSong.isPresent()) {
-            throw new ObjectNotFound("Song already in database", getClass());
+            throw new EntityExistsException(SONG_EXISTS);
         }
     }
 

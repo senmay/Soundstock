@@ -16,26 +16,21 @@ import java.util.List;
 public class AlbumController {
     private final AlbumMapper albumMapper;
     private final AlbumService albumService;
+
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public String createAlbum(@RequestBody AlbumDTO albumDTO) {
         return albumService.createAlbum(albumDTO);
     }
+
     @GetMapping("/all")
     public List<AlbumDTO> getAlbums() {
         return albumService.getAlbums();
     }
+
     @GetMapping("/{id}")
     public AlbumDTO getAlbumById(@PathVariable Long id) {
         return albumService.getAlbumById(id);
     }
-    @PutMapping("/{id}")
-    public String updateAlbum(@PathVariable Long id, @RequestBody AlbumDTO albumDTO) {
-        //TODO
-        return null;
-    }
-    //todo stworzyc testy dla albumow
-
-
 
 }

@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.soundstock.exceptions.ErrorMessages.ENTITY_EXISTS;
+import static com.soundstock.exceptions.ErrorMessages.USERNAME_OR_EMAIL_EXISTS;
 import static com.soundstock.exceptions.ErrorMessages.USER_NOT_FOUND;
 
 @Slf4j
@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
     public String registerUser(UserDTO userDTO) {
 
         if (userRepository.existsByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail())) {
-            throw new EntityExistsException(ENTITY_EXISTS);
+            throw new EntityExistsException(USERNAME_OR_EMAIL_EXISTS);
         }
         UserEntity userEntity = userMapper.mapToUserEntity(userDTO);
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
@@ -137,6 +137,7 @@ public class UserService implements UserDetailsService {
     private String generateRefreshToken(UserEntity user) {
         long currentTimeMillis = System.currentTimeMillis();
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
+
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withClaim("role", String.valueOf(user.getRole()))

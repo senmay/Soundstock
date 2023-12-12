@@ -21,7 +21,7 @@ public class ResourceFactory {
     protected ArtistDTO provideArtistDTO() {
         List<AlbumDTO> albums = new ArrayList<>();
         return new ArtistDTO(
-                faker.number().numberBetween(1L, 100L),
+                null,
                 faker.rockBand().name(),
                 faker.avatar().image(),
                 albums
@@ -59,7 +59,7 @@ public class ResourceFactory {
 
     protected SongDTO provideRandomSong() {
         return new SongDTO(
-                faker.number().randomNumber(),
+                null,
                 faker.rockBand().name(),
                 provideArtistDTO(),
                 faker.number().numberBetween(120, 300), // Duration in seconds

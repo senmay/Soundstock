@@ -7,6 +7,7 @@ import com.soundstock.model.dto.ArtistDTO;
 import com.soundstock.model.dto.SongDTO;
 import com.soundstock.model.entity.AlbumEntity;
 import com.soundstock.model.entity.ArtistEntity;
+import com.soundstock.testdata.ResourceFactory;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AlbumMapperTests {
+public class AlbumMapperTests extends ResourceFactory {
     AlbumMapper albumMapper = new AlbumMapperImpl();
     @Test
     public void test_mapping_album_entity_to_dto_with_all_fields_set() {
@@ -123,16 +124,9 @@ public class AlbumMapperTests {
         // Arrange
         ArtistDTO artistDTO = new ArtistDTO(1L, "Artist Name", null, null);
         List<SongDTO> songs = new ArrayList<>();
-        AlbumDTO albumDTO = new AlbumDTO(
-                1L,
-                "Album Title",
-                artistDTO,
-                "Rock",
-                2022,
-                songs,
-                null, // image
-                null  // description
-        );
+        AlbumDTO albumDTO = provideAlbumDTO();
+        albumDTO.setArtist(artistDTO);
+        albumDTO.setSongs(songs);
 
         // Act
         AlbumEntity albumEntity = albumMapper.mapDTOToAlbumEntity(albumDTO);

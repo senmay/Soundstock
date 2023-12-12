@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.Connection;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@Transactional
 class UserControllerTest {
     static Connection connection;
     @Autowired
@@ -91,7 +93,7 @@ class UserControllerTest {
         mockMvc.perform(post("/user/v1/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDTO)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -161,7 +163,7 @@ class UserControllerTest {
         mockMvc.perform(post("/user/v1/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(wrongUserDTO)))
-                .andExpect(status().isBadRequest());//zapytać się o błędy
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -179,7 +181,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String adminToken = loginResult.getResponse().getHeader("JWT_token");
+        String adminToken = loginResult.getResponse().getHeader("Access_token");
         System.out.println(adminToken);
 
         // Wykonanie żądania do endpointu z tokenem JWT w nagłówku
@@ -188,6 +190,30 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", Matchers.equalTo(1)))
                 .andExpect(jsonPath("$[0].username", Matchers.equalTo("A")));
+    }
+
+    @Test
+    void shouldRefreshTokenSuccessfully() throws Exception {
+        UserDTO adminLogin = UserDTO.builder()
+                .username("A")
+                .password("password")
+                .email("admin@wp.pl")
+                .build();
+
+        // Logowanie jako admin i pobranie tokenow
+        MvcResult loginResult = mockMvc.perform(post("/user/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(adminLogin)))
+                .andExpect(status().isOk())
+                .andReturn();
+        Thread.sleep(500);
+
+        String refreshToken = loginResult.getResponse().getHeader("Refresh_token");
+
+        mockMvc.perform(post("/user/v1/refresh")
+                        .header("Refresh_token", refreshToken))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Access_token"));
     }
 }
 

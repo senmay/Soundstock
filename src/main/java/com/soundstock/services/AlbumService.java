@@ -19,25 +19,23 @@ public class AlbumService {
     private final AlbumRepository albumRepository;
     private final AlbumMapper albumMapper;
 
-    public String createAlbum(AlbumDTO albumDTO){
+    public String createAlbum(AlbumDTO albumDTO) {
         AlbumEntity albumEntity = albumMapper.mapDTOToAlbumEntity(albumDTO);
         albumRepository.save(albumEntity);
         return "Album created";
     }
 
-    public List<AlbumDTO> getAlbums(){
+    public List<AlbumDTO> getAlbums() {
         List<AlbumEntity> albumsEntities = albumRepository.findAll();
         return albumMapper.mapAlbumEntitesToDTOList(albumsEntities);
     }
-    public AlbumDTO getAlbumById(Long id){
+
+    public AlbumDTO getAlbumById(Long id) {
         Optional<AlbumEntity> album = albumRepository.findById(id);
-        if (album.isPresent()){
+        if (album.isPresent()) {
             return albumMapper.mapAlbumEntityToDTO(album.get());
         } else {
             throw new ObjectNotFound("Album not found with id: " + id, getClass());
         }
     }
-    //TODO assign song to album
-
-
 }
