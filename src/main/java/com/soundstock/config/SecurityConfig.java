@@ -26,25 +26,17 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    //TODO create more String[] with different type of requests
     private final String[] whiteListedEndpoints = {
-            "/user/v1/register", "/user/v1/confirm", "/user/v1/login", "/user/v1/refresh", "/user/v1/userlist",
-            "/song/v1/getSong", "/stock/v1/id", "/song/v1/getAll", "/artist/v1/getAll", "/artist/v1/id", "/artist/v1/name","/album/v1/getAll",
-            "/album/v1/id", "/order/v1/all"};
+            "/user/v1/register", "/user/v1/confirm", "/user/v1/login", "/user/v1/refresh","/user/v1/userlist",
+            "/song/v1/getSong", "/stock/v1/id", "/song/v1/getAll", "/artist/v1/getAll", "/artist/v1/id", "/artist/v1/name"
+            };
     private final String[] endpointsWithOnlyAdminPrivileges = {
             "/song/v1/add",
             "/stock/v1/add", "/stock/v1/delete", "/stock/v1/all",
-            "/artist/v1/add", "/artist/v1/id",
-            "/album/v1/add"};
+            "/order/v1/all",
+    "/artist/v1/add","/artist/v1/id" };
     private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/order/v1/add",
-            "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test", "/stock/v1/stocklist"};
-    private final String[] SWAGGER_WHITELIST = {
-            "/api/v1/auth/**",
-            "/v3/api-docs/**",
-            "/v3/api-docs.yaml",
-            "/swagger-ui/**",
-            "/swagger-ui.html"
-    };
+            "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test","/stock/v1/stocklist"};
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";
     private final UserService userService;
@@ -56,10 +48,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> {
                     request
-                            .requestMatchers(whiteListedEndpoints).permitAll()
-                            .requestMatchers(SWAGGER_WHITELIST).permitAll();
+                            .requestMatchers(whiteListedEndpoints).permitAll();
                     request
-                            .requestMatchers(endpointsWithOnlyUserPrivileges).hasAnyAuthority(USER, ADMIN);
+                            .requestMatchers(endpointsWithOnlyUserPrivileges).hasAnyAuthority(USER,ADMIN);
+
                     request
                             .requestMatchers(endpointsWithOnlyAdminPrivileges).hasAnyAuthority(ADMIN);
                 }).authenticationProvider(authenticationProvider())
@@ -68,40 +60,25 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain actuatorFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(Customizer.withDefaults())
-                .authorizeHttpRequests(request -> {
-                    request
-                            .requestMatchers("/actuator/**").hasRole("ENDPOINT_ADMIN");
-                });
-        return httpSecurity.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(8);
     }
-
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(){
         return new CustomAuthenticationProvider(userService, passwordEncoder());
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(List.of("GET", "POST"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Bearer", "Refresh_token", "token"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Bearer", "Refresh_token"));
         configuration.addExposedHeader("Access_token");
         configuration.addExposedHeader("Refresh_token");
-        configuration.addExposedHeader("token");
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

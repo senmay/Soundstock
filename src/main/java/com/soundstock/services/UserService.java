@@ -42,13 +42,13 @@ import static com.soundstock.exceptions.ErrorMessages.USER_NOT_FOUND;
 @Service
 
 public class UserService implements UserDetailsService {
+    @Value("$jwt.secret")
+    private String secretKey;
     private final TokenRepository tokenRepository;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    @Value("${jwt.secret}")
-    private String secretKey;
 
     public UserService(TokenRepository tokenRepository, UserMapper userMapper, UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder, @Lazy AuthenticationManager authenticationManager) {
         this.tokenRepository = tokenRepository;
@@ -88,7 +88,7 @@ public class UserService implements UserDetailsService {
         tokenRepository.save(jwtAccessToken);
         tokenRepository.save(jwtRefreshToken);
 
-        response.addHeader("JWT_token", accessToken);
+        response.addHeader("Access_token", accessToken);
         response.addHeader("Refresh_token", refreshToken);
         log.info("Role for user " + userDTO.getUsername() + ": " + authenticatedUser.getRole());
     }
@@ -189,13 +189,12 @@ public class UserService implements UserDetailsService {
     }
 
     private void deactivateAllTokenForUser(String email) {
-        List<TokenEntity> tokens = tokenRepository.findByUserEmailAndTypeAndUsed(email, TokenType.BEARER, false);
-        for (TokenEntity token : tokens) {
+        List<TokenEntity> tokens = tokenRepository.findByUserEmailAndTypeAndUsed(email,TokenType.BEARER, false);
+        for(TokenEntity token: tokens){
             token.setUsed(true);
         }
         tokenRepository.saveAll(tokens);
     }
-
     public boolean isRefreshTokenValid(String refreshToken) {
         return tokenRepository.findByValue(refreshToken)
                 .map(tokenEntity ->
@@ -204,7 +203,6 @@ public class UserService implements UserDetailsService {
                                 userRepository.existsByEmail(tokenEntity.getUserEmail()))
                 .orElse(false);
     }
-
     public String getUserEmailFromRefreshToken(String refreshToken) {
         return tokenRepository.findByValue(refreshToken)
                 .map(TokenEntity::getUserEmail)
