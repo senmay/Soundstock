@@ -23,7 +23,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-    @Value("$jwt.secret")
+    @Value("${jwt.secret}")
     private String secretKey;
 
     @Override

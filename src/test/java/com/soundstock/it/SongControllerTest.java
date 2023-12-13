@@ -1,8 +1,6 @@
 package com.soundstock.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soundstock.mapper.SongMapper;
-import com.soundstock.mapper.SongMapperImpl;
 import com.soundstock.model.dto.SongDTO;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.SongEntity;
@@ -32,16 +30,13 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@Transactional
 class SongControllerTest extends ResourceFactory {
     static Connection connection;
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    SongRepository songRepository;
-    SongMapper songMapper = new SongMapperImpl();
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0")
             .withDatabaseName("soundstock")
@@ -49,6 +44,11 @@ class SongControllerTest extends ResourceFactory {
             .withPassword("password")
             .withExposedPorts(5432)
             .withInitScript("init.sql");
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    SongRepository songRepository;
 
     @DynamicPropertySource
     static void dynamicPropertyRegistry(DynamicPropertyRegistry registry) {
@@ -88,13 +88,12 @@ class SongControllerTest extends ResourceFactory {
     }
 
     @Test
-    void should_get_all_songs_with_user_credentials() throws Exception{
+    void should_get_all_songs_with_user_credentials() throws Exception {
         //Adding songs with admin access token
         List<SongDTO> songDTOS = provideRandomSongList(3);
-        System.out.println(songDTOS);
         songRepository.findAll();
         String adminAccessToken = obtainAdminAccessToken();
-        for (SongDTO songDTO: songDTOS){
+        for (SongDTO songDTO : songDTOS) {
             mockMvc.perform(post("/song/v1/add")
                             .header("Authorization", "Bearer " + adminAccessToken)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -113,6 +112,7 @@ class SongControllerTest extends ResourceFactory {
                 .andExpect(jsonPath("$[1].title", Matchers.equalTo(songDTOS.get(1).getTitle())))
                 .andExpect(jsonPath("$[2].title", Matchers.equalTo(songDTOS.get(2).getTitle())));
     }
+
     private String obtainAdminAccessToken() throws Exception {
         // Admin Credentials are already in database
         UserDTO adminLogin = UserDTO.builder()
@@ -129,7 +129,7 @@ class SongControllerTest extends ResourceFactory {
         return loginResult.getResponse().getHeader("Access_token");
     }
 
-    private String obtainUserAccessToken() throws Exception{
+    private String obtainUserAccessToken() throws Exception {
         // User Credentials are already in database
         UserDTO userLogin = UserDTO.builder()
                 .username("U1")

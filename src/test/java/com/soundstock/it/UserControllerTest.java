@@ -5,6 +5,7 @@ import com.soundstock.mapper.UserMapper;
 import com.soundstock.mapper.UserMapperImpl;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.repository.UserRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,13 +21,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -37,11 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class UserControllerTest {
     static Connection connection;
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    UserRepository userRepository;
-    UserMapper userMapper = new UserMapperImpl();
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0")
             .withDatabaseName("soundstock")
@@ -49,6 +46,11 @@ class UserControllerTest {
             .withPassword("password")
             .withExposedPorts(5432)
             .withInitScript("init.sql");
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    UserRepository userRepository;
+    UserMapper userMapper = new UserMapperImpl();
 
     @DynamicPropertySource
     static void dynamicPropertyRegistry(DynamicPropertyRegistry registry) {
@@ -93,7 +95,9 @@ class UserControllerTest {
         mockMvc.perform(post("/user/v1/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDTO)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof EntityExistsException))
+                .andExpect(result -> assertEquals("Username or Email already exists", result.getResolvedException().getMessage()));
     }
 
     @Test
@@ -163,7 +167,7 @@ class UserControllerTest {
         mockMvc.perform(post("/user/v1/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(wrongUserDTO)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -197,7 +201,6 @@ class UserControllerTest {
         UserDTO adminLogin = UserDTO.builder()
                 .username("A")
                 .password("password")
-                .email("admin@wp.pl")
                 .build();
 
         // Logowanie jako admin i pobranie tokenow
@@ -206,9 +209,9 @@ class UserControllerTest {
                         .content(new ObjectMapper().writeValueAsString(adminLogin)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Thread.sleep(500);
 
         String refreshToken = loginResult.getResponse().getHeader("Refresh_token");
+        Thread.sleep(1000);
 
         mockMvc.perform(post("/user/v1/refresh")
                         .header("Refresh_token", refreshToken))

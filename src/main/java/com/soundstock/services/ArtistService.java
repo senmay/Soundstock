@@ -50,12 +50,17 @@ public class ArtistService {
         ArtistEntity artistEntity = artistMapper.mapDTOToArtistEntity(artistDTO);
         return artistRepository.save(artistEntity);
     }
-    public void checkIfArtistExists(ArtistDTO artistDTO){
+
+    public void deleteArtistById(Long id){
+        artistRepository.deleteById(id);
+    }
+    private void checkIfArtistExists(ArtistDTO artistDTO){
         Optional<ArtistEntity> existingArtist = artistRepository.findByName(artistDTO.getName());
         if (existingArtist.isPresent()) {
             throw new ObjectNotFound("Artist already in database", getClass());
         }
     }
+
 }
 
 
