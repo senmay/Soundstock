@@ -6,7 +6,6 @@ import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.SongEntity;
 import com.soundstock.repository.SongRepository;
 import com.soundstock.testdata.ResourceFactory;
-import jakarta.transaction.Transactional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -44,6 +43,11 @@ class SongControllerTest extends ResourceFactory {
             .withPassword("password")
             .withExposedPorts(5432)
             .withInitScript("init.sql");
+    @Autowired
+    SongRepository songRepository;
+    SongMapper songMapper = new SongMapperImpl();
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
     private MockMvc mockMvc;
@@ -126,7 +130,7 @@ class SongControllerTest extends ResourceFactory {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        return loginResult.getResponse().getHeader("Access_token");
+        return loginResult.getResponse().getHeader("JWT_token");
     }
 
     private String obtainUserAccessToken() throws Exception {
@@ -143,6 +147,6 @@ class SongControllerTest extends ResourceFactory {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        return loginResult.getResponse().getHeader("Access_token");
+        return loginResult.getResponse().getHeader("JWT_token");
     }
 }

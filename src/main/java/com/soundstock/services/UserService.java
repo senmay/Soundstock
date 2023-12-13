@@ -58,9 +58,8 @@ public class UserService implements UserDetailsService {
         this.authenticationManager = authenticationManager;
     }
 
-
     @Transactional
-    public void registerUser(UserDTO userDTO, HttpServletResponse response) {
+    public String registerUser(UserDTO userDTO) {
 
         if (userRepository.existsByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail())) {
             throw new EntityExistsException(USERNAME_OR_EMAIL_EXISTS);
@@ -68,7 +67,8 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = userMapper.mapToUserEntity(userDTO);
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(userEntity);
-        response.addHeader("token", createAndStoreRegistrationToken(userDTO.getEmail()).getValue());
+
+        return createAndStoreRegistrationToken(userDTO.getEmail()).getValue();
     }
 
     @Transactional
@@ -88,13 +88,13 @@ public class UserService implements UserDetailsService {
         tokenRepository.save(jwtAccessToken);
         tokenRepository.save(jwtRefreshToken);
 
-        response.addHeader("Access_token", accessToken);
+        response.addHeader("JWT_token", accessToken);
         response.addHeader("Refresh_token", refreshToken);
         log.info("Role for user " + userDTO.getUsername() + ": " + authenticatedUser.getRole());
     }
 
 
-    public void confirmUser(String tokenValue) {
+    public String confirmUser(String tokenValue) {
         TokenEntity tokenEntity = tokenRepository.findByValue(tokenValue)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Token"));
 
@@ -114,6 +114,7 @@ public class UserService implements UserDetailsService {
 
         tokenEntity.setUsed(true);
         tokenRepository.save(tokenEntity);
+        return "User verified successfully";
     }
 
     private TokenEntity createAndStoreRegistrationToken(String email) {
