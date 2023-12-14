@@ -30,7 +30,6 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -90,7 +89,6 @@ class ArtistControllerTest extends ResourceFactory {
     @Test
     void should_get_all_artists_with_user_credentials() throws Exception {
         List<ArtistDTO> artistDTOList = provideArtistDTOList(3);
-        songRepository.findAll();
         String adminAccessToken = obtainAdminAccessToken();
         for (ArtistDTO artistDTO : artistDTOList) {
             mockMvc.perform(post("/artist/v1/add")
@@ -111,10 +109,7 @@ class ArtistControllerTest extends ResourceFactory {
                 .andExpect(jsonPath("$[1].name", Matchers.equalTo(artistDTOList.get(1).getName())))
                 .andExpect(jsonPath("$[2].name", Matchers.equalTo(artistDTOList.get(2).getName())));
 
-
-
     }
-
 
     private String obtainAdminAccessToken() throws Exception {
         // Admin Credentials are already in database

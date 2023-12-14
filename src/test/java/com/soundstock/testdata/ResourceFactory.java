@@ -90,12 +90,12 @@ public class ResourceFactory {
     protected AlbumDTO provideAlbumDTO() {
         ArtistDTO artistDTO = provideArtistDTO();
         return new AlbumDTO(
-                faker.number().numberBetween(1L, 100L),
+                null,
                 faker.lorem().word(),
-                artistDTO,
+                null,
                 faker.music().genre(),
                 faker.number().numberBetween(1980, 2021),
-                provideRandomSongList(5),
+                null,
                 faker.internet().image(),
                 faker.lorem().sentence()
         );

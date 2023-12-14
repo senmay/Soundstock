@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -40,7 +39,7 @@ class AlbumServiceTest extends ResourceFactory {
         String result = albumService.createAlbum(albumDTO);
 
         // Then
-        assertEquals("Album created", result);
+        assertEquals("Album added", result);
         Mockito.verify(albumRepository, times(1)).save(any(AlbumEntity.class));
     }
 

@@ -22,7 +22,7 @@ public class AlbumService {
     public String createAlbum(AlbumDTO albumDTO) {
         AlbumEntity albumEntity = albumMapper.mapDTOToAlbumEntity(albumDTO);
         albumRepository.save(albumEntity);
-        return "Album created";
+        return "Album added";
     }
 
     public List<AlbumDTO> getAlbums() {

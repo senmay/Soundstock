@@ -1,6 +1,5 @@
 package com.soundstock.controller;
 
-import com.soundstock.mapper.AlbumMapper;
 import com.soundstock.model.dto.AlbumDTO;
 import com.soundstock.services.AlbumService;
 import lombok.RequiredArgsConstructor;
@@ -14,21 +13,22 @@ import java.util.List;
 @RequestMapping("album/v1")
 
 public class AlbumController {
-    private final AlbumMapper albumMapper;
     private final AlbumService albumService;
 
-    @PostMapping("/create")
+    @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public String createAlbum(@RequestBody AlbumDTO albumDTO) {
         return albumService.createAlbum(albumDTO);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/getAll")
+    @ResponseStatus(HttpStatus.OK)
     public List<AlbumDTO> getAlbums() {
         return albumService.getAlbums();
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public AlbumDTO getAlbumById(@PathVariable Long id) {
         return albumService.getAlbumById(id);
     }
