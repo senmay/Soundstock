@@ -2,6 +2,8 @@ package com.soundstock.controller;
 
 import com.soundstock.model.dto.StockDTO;
 import com.soundstock.services.StockService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ public class StockController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public String addStock(@RequestBody StockDTO stockDTO){
         return stockService.createStock(stockDTO);
     }

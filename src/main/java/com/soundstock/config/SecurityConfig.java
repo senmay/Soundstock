@@ -38,6 +38,13 @@ public class SecurityConfig {
             "/album/v1/add"};
     private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/order/v1/add",
             "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test", "/stock/v1/stocklist"};
+    private final String[] SWAGGER_WHITELIST = {
+            "/api/v1/auth/**",
+            "/v3/api-docs/**",
+            "/v3/api-docs.yaml",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
+    };
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";
     private final UserService userService;
@@ -49,7 +56,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> {
                     request
-                            .requestMatchers(whiteListedEndpoints).permitAll();
+                            .requestMatchers(whiteListedEndpoints).permitAll()
+                            .requestMatchers(SWAGGER_WHITELIST).permitAll();
                     request
                             .requestMatchers(endpointsWithOnlyUserPrivileges).hasAnyAuthority(USER, ADMIN);
 
