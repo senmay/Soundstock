@@ -60,7 +60,7 @@ public class UserService implements UserDetailsService {
 
 
     @Transactional
-    public String registerUser(UserDTO userDTO) {
+    public void registerUser(UserDTO userDTO, HttpServletResponse response) {
 
         if (userRepository.existsByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail())) {
             throw new EntityExistsException(USERNAME_OR_EMAIL_EXISTS);
@@ -68,8 +68,7 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = userMapper.mapToUserEntity(userDTO);
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(userEntity);
-
-        return createAndStoreRegistrationToken(userDTO.getEmail()).getValue();
+        response.addHeader("token", createAndStoreRegistrationToken(userDTO.getEmail()).getValue());
     }
 
     @Transactional
@@ -95,7 +94,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public String confirmUser(String tokenValue) {
+    public void confirmUser(String tokenValue) {
         TokenEntity tokenEntity = tokenRepository.findByValue(tokenValue)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Token"));
 
@@ -115,7 +114,6 @@ public class UserService implements UserDetailsService {
 
         tokenEntity.setUsed(true);
         tokenRepository.save(tokenEntity);
-        return "User verified successfully";
     }
 
     private TokenEntity createAndStoreRegistrationToken(String email) {

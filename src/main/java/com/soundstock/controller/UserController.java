@@ -1,6 +1,5 @@
 package com.soundstock.controller;
 
-import com.soundstock.mapper.UserMapper;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,13 +19,14 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public String registerUser(@RequestBody UserDTO userDTO) {
-        return userService.registerUser(userDTO);
+    public void registerUser(@RequestBody UserDTO userDTO, HttpServletResponse response) {
+        userService.registerUser(userDTO, response);
     }
+
     @PostMapping("/confirm")
     @ResponseStatus(HttpStatus.OK)
-    public String confirmUser(@RequestParam("token") String token) {
-        return userService.confirmUser(token);
+    public void confirmUser(HttpServletRequest request) {
+        userService.confirmUser(request.getHeader("token"));
     }
 
     @GetMapping("/jwt")
@@ -38,7 +38,7 @@ public class UserController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public void login(@RequestBody UserDTO userDTO, HttpServletResponse response) {
-       userService.loginWithJWT(userDTO, response);
+        userService.loginWithJWT(userDTO, response);
     }
 
     @GetMapping("/userlist")
@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         return userService.refreshToken(request, response);
     }
 
