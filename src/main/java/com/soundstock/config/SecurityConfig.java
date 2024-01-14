@@ -43,7 +43,9 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/actuator/prometheus",
+            "/actuator/**"
     };
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";
