@@ -43,9 +43,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/actuator/prometheus",
-            "/actuator/**"
+            "/swagger-ui.html"
     };
     public static final String ADMIN = "ADMIN";
     public static final String USER = "USER";
@@ -62,12 +60,22 @@ public class SecurityConfig {
                             .requestMatchers(SWAGGER_WHITELIST).permitAll();
                     request
                             .requestMatchers(endpointsWithOnlyUserPrivileges).hasAnyAuthority(USER, ADMIN);
-
                     request
                             .requestMatchers(endpointsWithOnlyAdminPrivileges).hasAnyAuthority(ADMIN);
                 }).authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public SecurityFilterChain actuatorFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(Customizer.withDefaults())
+                .authorizeHttpRequests(request -> {
+                    request
+                            .requestMatchers("/actuator/**").hasRole("ENDPOINT_ADMIN");
+                });
+        return httpSecurity.build();
     }
 
     @Bean
