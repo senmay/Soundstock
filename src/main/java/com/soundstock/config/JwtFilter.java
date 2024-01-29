@@ -28,11 +28,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().equals("/user/v1/login") && request.getRequestURI().equals("/actuator/**")){
-            filterChain.doFilter(request,response);
+        if (request.getServletPath().equals("/user/v1/login") || request.getRequestURI().equals("/actuator/prometheus")) {
+            filterChain.doFilter(request, response);
         } else {
             String authorizationToken = request.getHeader(AUTHORIZATION);
-            if (authorizationToken != null && authorizationToken.startsWith("Bearer ")){
+            if (authorizationToken != null && authorizationToken.startsWith("Bearer ")) {
                 authorizationToken = authorizationToken.substring(7); // Usuwanie "Bearer " z tokena
                 Algorithm algorithm = Algorithm.HMAC256(secretKey);
                 JWTVerifier verifier = JWT.require(algorithm).build();
@@ -47,9 +47,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 authorities.add(new SimpleGrantedAuthority(role));
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                filterChain.doFilter(request,response);
+                filterChain.doFilter(request, response);
             } else {
-                filterChain.doFilter(request,response);
+                filterChain.doFilter(request, response);
             }
         }
     }
