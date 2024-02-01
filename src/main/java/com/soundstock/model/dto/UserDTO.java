@@ -1,10 +1,12 @@
 package com.soundstock.model.dto;
 
+import com.github.javafaker.Stock;
 import com.soundstock.enums.UserRole;
 import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Value
 @Builder

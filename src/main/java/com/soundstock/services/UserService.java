@@ -129,7 +129,7 @@ public class UserService implements UserDetailsService {
                 .withSubject(user.getUsername())
                 .withClaim("role", String.valueOf(user.getRole()))
                 .withIssuedAt(new Date(currentTimeMillis))
-                .withExpiresAt(new Date(currentTimeMillis + 30000))
+                .withExpiresAt(new Date(currentTimeMillis + 3000000))
                 .sign(algorithm);
     }
 
@@ -156,7 +156,7 @@ public class UserService implements UserDetailsService {
             String userEmail = getUserEmailFromRefreshToken(refreshToken);
             UserEntity user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + userEmail));
-
+            deactivateAllTokenForUser(userEmail);
             String newAccessToken = generateAccessToken(user);
             TokenEntity jwtAccessToken = new TokenEntity(newAccessToken, TokenType.ACCESS, user.getEmail());
             tokenRepository.save(jwtAccessToken);

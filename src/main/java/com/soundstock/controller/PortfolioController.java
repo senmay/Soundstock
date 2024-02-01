@@ -22,4 +22,10 @@ public class PortfolioController {
     public List<PortfolioItemDTO> calculatePortfolio(Principal principal){
         return portfolioService.calculatePortfolio(principal);
     }
+
+    @GetMapping("/check")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PortfolioItemDTO> getPortfolio(Principal principal) {
+        return portfolioService.getPortfolioItemsForUser(principal);
+    }
 }
