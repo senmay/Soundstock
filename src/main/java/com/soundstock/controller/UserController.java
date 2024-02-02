@@ -1,12 +1,12 @@
 package com.soundstock.controller;
 
-import com.soundstock.mapper.UserMapper;
-import com.soundstock.model.User;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,17 +16,17 @@ import java.util.List;
 @RequestMapping("user/v1")
 public class UserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public String registerUser(@RequestBody UserDTO userDTO) {
-        return userService.registerUser(userDTO);
+    public void registerUser(@RequestBody UserDTO userDTO, HttpServletResponse response) {
+        userService.registerUser(userDTO, response);
     }
+
     @PostMapping("/confirm")
     @ResponseStatus(HttpStatus.OK)
-    public String confirmUser(@RequestParam("token") String token) {
-        return userService.confirmUser(token);
+    public void confirmUser(HttpServletRequest request) {
+        userService.confirmUser(request.getHeader("token"));
     }
 
     @GetMapping("/jwt")
@@ -37,15 +37,20 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public String login(@RequestBody UserDTO userDTO, HttpServletResponse response) {
-        return userService.loginWithJWT(userDTO, response);
+    public void login(@RequestBody UserDTO userDTO, HttpServletResponse response) {
+        userService.loginWithJWT(userDTO, response);
     }
 
     @GetMapping("/userlist")
     @ResponseStatus(HttpStatus.OK)
     public List<UserDTO> getAllUsers() {
-        List<User> userList = userService.getAllUsers();
-        return userMapper.mapToUserDTOList(userList);
+        return userService.getAllUsers();
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        return userService.refreshToken(request, response);
+    }
+
 }
 

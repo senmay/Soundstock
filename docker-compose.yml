@@ -1,0 +1,22 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 9090:9090
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--enable-feature=exemplar-storage'
+  grafana:
+    image: grafana/grafana:latest
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 3000:3000
+    volumes:
+      - ./docker/grafana:/var/lib/grafana
+
+
