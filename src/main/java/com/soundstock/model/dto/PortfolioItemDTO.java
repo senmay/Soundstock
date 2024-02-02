@@ -8,10 +8,7 @@ import java.math.BigDecimal;
 @Value
 @Builder
 public class PortfolioItemDTO {
-    Long id;
     String stockName;
-    Integer quantity;
+    Long quantity;
     BigDecimal totalValue;
-    BigDecimal profitLoss;
-    BigDecimal percentageChange;
 }
