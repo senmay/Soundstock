@@ -17,13 +17,13 @@ import java.util.List;
 @RequestMapping("portfolio/v1")
 public class PortfolioController {
     private final PortfolioService portfolioService;
-    @GetMapping
+    @GetMapping("/check")
     @ResponseStatus(HttpStatus.OK)
     public List<PortfolioItemDTO> calculatePortfolio(Principal principal){
         return portfolioService.calculatePortfolio(principal);
     }
 
-    @GetMapping("/check")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<PortfolioItemDTO> getPortfolio(Principal principal) {
         return portfolioService.getPortfolioItemsForUser(principal);

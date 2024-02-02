@@ -20,8 +20,6 @@ public class PortfolioItemEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     String stockName;
-    Integer quantity;
+    Long quantity;
     BigDecimal totalValue;
-    BigDecimal profitLoss;
-    BigDecimal percentageChange;
 }

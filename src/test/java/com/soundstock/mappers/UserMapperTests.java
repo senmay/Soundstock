@@ -2,6 +2,7 @@ package com.soundstock.mappers;
 
 import com.soundstock.enums.UserRole;
 import com.soundstock.mapper.UserMapperImpl;
+import com.soundstock.model.dto.OrderDTO;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.UserEntity;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ public class UserMapperTests {
                 .password("password")
                 .enabled(true)
                 .role(UserRole.ADMIN)
+                .orders(new ArrayList<OrderDTO>())
                 .build();
 
         // When
@@ -36,6 +38,7 @@ public class UserMapperTests {
         assertEquals(userDTO.getEmail(), userEntity.getEmail());
         assertEquals(userDTO.getPassword(), userEntity.getPassword());
         assertEquals(userDTO.isEnabled(), userEntity.isEnabled());
+        assertEquals(userDTO.getOrders(), userEntity.getOrders());
         assertEquals(userDTO.getRole(), userEntity.getRole());
     }
 

@@ -1,11 +1,14 @@
 package com.soundstock.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soundstock.mapper.SongMapper;
+import com.soundstock.mapper.SongMapperImpl;
 import com.soundstock.model.dto.SongDTO;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.model.entity.SongEntity;
 import com.soundstock.repository.SongRepository;
 import com.soundstock.testdata.ResourceFactory;
+import jakarta.transaction.Transactional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -48,11 +51,6 @@ class SongControllerTest extends ResourceFactory {
     SongMapper songMapper = new SongMapperImpl();
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    SongRepository songRepository;
 
     @DynamicPropertySource
     static void dynamicPropertyRegistry(DynamicPropertyRegistry registry) {

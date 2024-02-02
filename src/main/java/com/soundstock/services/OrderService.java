@@ -4,9 +4,7 @@ import com.soundstock.exceptions.InsufficientBalanceException;
 import com.soundstock.exceptions.ObjectNotFound;
 import com.soundstock.mapper.OrderMapper;
 import com.soundstock.model.dto.OrderDTO;
-import com.soundstock.model.dto.StockDTO;
 import com.soundstock.model.entity.OrderEntity;
-import com.soundstock.model.entity.StockEntity;
 import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.OrderRepository;
 import com.soundstock.repository.StockRepository;
@@ -42,11 +40,12 @@ public class OrderService {
         stockRepository.findById(orderDTO.getStock().getId())
                 .orElseThrow(() -> new ObjectNotFound(STOCK_NOT_FOUND));
 
+        //todo liczyc cene w backendzie
+
         BigDecimal orderCost = orderDTO.getPricePerShare().multiply(new BigDecimal(orderDTO.getQuantity()));
         if (user.getBalance().compareTo(orderCost) < 0) {
             throw new InsufficientBalanceException(INSUFFICIENT_BALANCE);
         }
-
         OrderEntity orderEntity = orderMapper.mapDTOToOrderEntity(orderDTO);
         orderEntity.setTransactionValue(orderCost);
         orderEntity.setUser(user);

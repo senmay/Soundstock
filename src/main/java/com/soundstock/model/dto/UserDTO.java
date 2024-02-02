@@ -18,4 +18,5 @@ public class UserDTO {
     boolean enabled;
     UserRole role;
     BigDecimal balance;
+    List<OrderDTO> orders;
 }
