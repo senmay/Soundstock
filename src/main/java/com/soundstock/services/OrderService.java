@@ -4,9 +4,11 @@ import com.soundstock.exceptions.InsufficientBalanceException;
 import com.soundstock.exceptions.ObjectNotFound;
 import com.soundstock.mapper.OrderMapper;
 import com.soundstock.model.dto.OrderDTO;
+import com.soundstock.model.dto.PortfolioItemDTO;
 import com.soundstock.model.entity.OrderEntity;
 import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.OrderRepository;
+import com.soundstock.repository.PortfolioItemRepository;
 import com.soundstock.repository.StockRepository;
 import com.soundstock.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -30,6 +32,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final UserRepository userRepository;
     private final StockRepository stockRepository;
+    private final PortfolioItemRepository portfolioItemRepository;
 
     @Transactional
     public String registerOrder(OrderDTO orderDTO, Principal principal) {
@@ -46,17 +49,29 @@ public class OrderService {
         if (user.getBalance().compareTo(orderCost) < 0) {
             throw new InsufficientBalanceException(INSUFFICIENT_BALANCE);
         }
+        if (orderDTO.getTransactionType() == BUY) {
+            user.setBalance(user.getBalance().subtract(orderCost));
+        } else {
+            List<OrderEntity> byUserId = orderRepository.findByUserId(user.getId());
+            List<PortfolioItemDTO> totalQuantitiesAndValuesForAllTransactions = portfolioItemRepository.findTotalQuantitiesAndValuesForAllTransactions(byUserId);
+            int totalQuantity = totalQuantitiesAndValuesForAllTransactions.stream()
+                    .filter(c -> c.getStockName().equals(orderDTO.getStock().getName()))
+                    .mapToInt(x -> Math.toIntExact(x.getQuantity()))
+                    .findFirst()
+                    .orElse(0);
+
+            if(orderDTO.getQuantity() <= totalQuantity){
+                user.setBalance(user.getBalance().add(orderCost));
+            } else {
+                throw new InsufficientBalanceException(INSUFFICIENT_BALANCE);
+            }
+        }
         OrderEntity orderEntity = orderMapper.mapDTOToOrderEntity(orderDTO);
         orderEntity.setTransactionValue(orderCost);
         orderEntity.setUser(user);
         orderRepository.save(orderEntity);
         log.info("Order saved");
 
-        if (orderDTO.getTransactionType() == BUY) {
-            user.setBalance(user.getBalance().subtract(orderCost));
-        } else {
-            user.setBalance(user.getBalance().add(orderCost));
-        }
         //TODO DODAĆ WIECEJ SPRAWDZEŃ
 
         userRepository.save(user);
