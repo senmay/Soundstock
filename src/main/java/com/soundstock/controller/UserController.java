@@ -53,7 +53,7 @@ public class UserController {
         return userService.refreshToken(request, response);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/userinfo")
     @ResponseStatus(HttpStatus.OK)
     public UserDTO getUser(Principal principal) {
         return userService.getUser(principal);
