@@ -32,14 +32,15 @@ public class SecurityConfig {
     private final String[] whiteListedEndpoints = {
             "/user/v1/register", "/user/v1/confirm", "/user/v1/login", "/user/v1/refresh", "/user/v1/userlist",
             "/song/v1/getSong", "/stock/v1/id", "/song/v1/getAll", "/artist/v1/getAll", "/artist/v1/id", "/artist/v1/name", "/album/v1/getAll",
-            "/album/v1/id", "/order/v1/all"};
+            "/album/v1/id", "/order/v1/all",
+            "/stock/v1/stocklist"};
     private final String[] endpointsWithOnlyAdminPrivileges = {
             "/song/v1/add",
             "/stock/v1/add", "/stock/v1/delete", "/stock/v1/all",
             "/artist/v1/add", "/artist/v1/id",
             "/album/v1/add"};
     private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/order/v1/add",
-            "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test", "/stock/v1/stocklist"};
+            "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test"};
     private final String[] SWAGGER_WHITELIST = {
             "/api/v1/auth/**",
             "/v3/api-docs/**",

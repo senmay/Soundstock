@@ -32,6 +32,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -42,7 +43,7 @@ import static com.soundstock.exceptions.ErrorMessages.USER_NOT_FOUND;
 @Service
 
 public class UserService implements UserDetailsService {
-    @Value("$jwt.secret")
+    @Value("${jwt.secret}")
     private String secretKey;
     private final TokenRepository tokenRepository;
     private final UserMapper userMapper;
@@ -205,5 +206,10 @@ public class UserService implements UserDetailsService {
         return tokenRepository.findByValue(refreshToken)
                 .map(TokenEntity::getUserEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+    }
+    public UserDTO getUser(Principal principal) {
+        String username = principal.getName();
+        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFound(USER_NOT_FOUND));
+        return userMapper.mapToUserDTO(userEntity);
     }
 }
