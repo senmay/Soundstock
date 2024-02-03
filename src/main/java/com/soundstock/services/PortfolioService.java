@@ -1,11 +1,10 @@
 package com.soundstock.services;
 
+import com.soundstock.enums.TransactionType;
 import com.soundstock.exceptions.ObjectNotFound;
 import com.soundstock.mapper.PortfolioItemMapper;
-import com.soundstock.model.PortfolioItemProjection;
 import com.soundstock.model.dto.PortfolioItemDTO;
 import com.soundstock.model.entity.OrderEntity;
-import com.soundstock.model.entity.PortfolioItemEntity;
 import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.OrderRepository;
 import com.soundstock.repository.PortfolioItemRepository;
@@ -14,12 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.soundstock.exceptions.ErrorMessages.USER_NOT_FOUND;
 
@@ -37,7 +33,7 @@ public class PortfolioService {
         UserEntity user = userRepository.findByUsername(name).orElseThrow(() -> new ObjectNotFound(USER_NOT_FOUND));
         Long id = user.getId();
         List<OrderEntity> orders = orderRepository.findByUserId(id);
-        return portfolioRepository.findTotalQuantitiesAndValuesForBuyTransactions(orders);
+        return portfolioRepository.findTotalQuantitiesAndValuesForAllTransactions(orders);
     }
 
     public List<PortfolioItemDTO> getPortfolioItemsForUser(Principal principal) {

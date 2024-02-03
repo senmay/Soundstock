@@ -33,3 +33,4 @@ build/
 .vscode/
 /docker/grafana/grafana.db
 /docker/grafana/
+/src/main/java/com/soundstock/forTestingPurposes/
