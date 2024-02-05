@@ -25,15 +25,15 @@ import static com.soundstock.exceptions.ErrorMessages.USER_NOT_FOUND;
 public class PortfolioService {
     private final OrderRepository orderRepository;
     private final PortfolioItemRepository portfolioRepository;
-    private final PortfolioItemMapper portfolioItemMapper;
     private final UserRepository userRepository;
 
     public List<PortfolioItemDTO> calculatePortfolio(Principal principal){
         String name = principal.getName();
-        UserEntity user = userRepository.findByUsername(name).orElseThrow(() -> new ObjectNotFound(USER_NOT_FOUND));
-        Long id = user.getId();
-        List<OrderEntity> orders = orderRepository.findByUserId(id);
-        return portfolioRepository.findTotalQuantitiesAndValuesForAllTransactions(orders);
+        Long id = userRepository
+                .findByUsername(name)
+                .orElseThrow(() ->
+                        new ObjectNotFound(USER_NOT_FOUND)).getId();
+        return portfolioRepository.findTotalQuantitiesAndValuesForAllTransactions(orderRepository.findByUserId(id));
     }
 
     public List<PortfolioItemDTO> getPortfolioItemsForUser(Principal principal) {
