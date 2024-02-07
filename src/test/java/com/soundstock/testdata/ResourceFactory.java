@@ -63,7 +63,9 @@ public class ResourceFactory {
                 faker.rockBand().name(),
                 provideArtistDTO(),
                 faker.number().numberBetween(120, 300), // Duration in seconds
-                null //temporary null for album
+                null,
+                faker.number().numberBetween(1,1000000L)//temporary null for album
+
         );
     }
 

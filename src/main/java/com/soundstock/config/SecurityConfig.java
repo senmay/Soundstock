@@ -1,6 +1,6 @@
 package com.soundstock.config;
 
-import com.soundstock.services.CustomAuthenticationProvider;
+import com.soundstock.services.helpers.CustomAuthenticationProvider;
 import com.soundstock.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +39,8 @@ public class SecurityConfig {
             "/stock/v1/add", "/stock/v1/delete", "/stock/v1/all",
             "/artist/v1/add", "/artist/v1/id",
             "/album/v1/add",
-            "/api/v1/coins", "/api/v1/coins2", "/api/v1/import", "/api/v1/songs"};
+            "/coin/v1/coins", "/coin/v1/coins2", "/coin/v1/import",
+            "/lastfm/v1/songs", "/lastfm/v1/import"};
     private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/user/v1/userinfo", "/order/v1/add",
             "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test"};
     private final String[] SWAGGER_WHITELIST = {

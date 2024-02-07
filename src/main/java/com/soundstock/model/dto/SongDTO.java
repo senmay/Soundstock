@@ -9,5 +9,6 @@ public class SongDTO {
     ArtistDTO artist;
     Integer duration;
     AlbumDTO album;
+    Long playcount;
 
 }

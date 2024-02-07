@@ -1,43 +1,55 @@
 package com.soundstock.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soundstock.config.ApiConfig;
-import com.soundstock.model.dto.CoingeckoStockDTO;
+import com.soundstock.mapper.SongMapper;
+import com.soundstock.mapper.TrackMapper;
+import com.soundstock.model.dto.SongDTO;
+import com.soundstock.model.dto.api.coingecko.CoingeckoStockDTO;
+import com.soundstock.model.dto.api.lastfm.Track;
+import com.soundstock.model.dto.api.lastfm.TracksResponse;
+import com.soundstock.repository.SongRepository;
+import com.soundstock.services.helpers.HttpClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.soundstock.enums.LastFmEndpoints.LAST_FM_BASEURL;
+import static com.soundstock.enums.LastFmEndpoints.MOST_POPULAR_SONGS;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ApiService {
     private final ApiConfig apiConfig;
-    String getCoinLists = "/coins/list/";
-    String getSongs = "/?method=chart.gettoptracks&";
+    private final ObjectMapper objectMapper;
+    private final HttpClientService httpClientService;
+    private final TrackMapper trackMapper;
+    private final SongMapper songMapper;
+    private final SongRepository songRepository;
     public List<CoingeckoStockDTO> fetchCoins() {
+        String url = apiConfig.getCoingeckoUrl() + "/coins/list/";
+        HttpRequest request = buildRequestForCoingecko(url);
         try {
-            HttpRequest request = buildRequestForCoingecko(getCoinLists);
-            HttpResponse<String> response = sendRequest(request);
-            List<JsonNode> jsonNodeList = handleResponse(response);
-            return processCoins(jsonNodeList);
-        } catch (IOException | InterruptedException e) {
+            // Typ odpowiedzi zmieniony na String, ponieważ przetwarzamy JSON poniżej
+            String responseBody = httpClientService.sendRequest(request, String.class);
+            List<JsonNode> jsonNodeList = objectMapper.readValue(responseBody, new TypeReference<List<JsonNode>>() {});
+            return mapCoinsToDTO(jsonNodeList);
+        } catch (IOException e) {
             log.warn("Error: Unable to fetch coingecko API response. " + e.getMessage());
             return Collections.emptyList();
         }
     }
-    public List<CoingeckoStockDTO> processCoins(List<JsonNode> list){
+    public List<CoingeckoStockDTO> mapCoinsToDTO(List<JsonNode> list){
         List<CoingeckoStockDTO> coingeckoStockDTOList = new ArrayList<>();
         for(JsonNode node : list){
             CoingeckoStockDTO coingeckoStockDTO = new CoingeckoStockDTO();
@@ -47,55 +59,31 @@ public class ApiService {
         }
         return coingeckoStockDTOList;
     }
-    public List<JsonNode> getMostPopularSongs() {
-        try {
-            HttpRequest request = buildRequestForLastFm(getSongs);
-            HttpResponse<String> response = sendRequest(request);
-            System.out.println(response.body());
-            JsonNode rootNode = new ObjectMapper().readTree(response.body());
-            JsonNode tracksNode = rootNode.path("toptracks").path("track");
-            if (tracksNode.isArray()) {
-                List<JsonNode> tracks = new ArrayList<>();
-                for (JsonNode node : tracksNode) {
-                    tracks.add(node);
-                }
-                return tracks;
-            }
-        } catch (IOException | InterruptedException e) {
-            log.warn("Error: Unable to fetch lastfm API response. " + e.getMessage());
-        }
-        return Collections.emptyList();
-    }
-    private HttpRequest buildRequestForLastFm(String url) {
-        return HttpRequest.newBuilder()
-                .uri(URI.create(apiConfig.getLastFmUrl() + url + "api_key=" + apiConfig.getLastFmKey() + "&format=json"))
-                .header("Accept", "application/json")
-                .GET()
-                .build();
+    public List<Track> getMostPopularSongs() {
+        String url = LAST_FM_BASEURL.getEndpoint() + MOST_POPULAR_SONGS.getEndpoint();
+        HttpRequest request = buildRequestForLastFm(url);
+        log.debug("Request URI: {}", request.uri());
+        TracksResponse responseBody = httpClientService.sendRequest(request, TracksResponse.class);
+        return responseBody.getTracks().getTrack();
     }
     private HttpRequest buildRequestForCoingecko(String url) {
         return HttpRequest.newBuilder()
-                .uri(URI.create(apiConfig.getGeckoUrl() + url + "?x_cg_demo_api_key=" + apiConfig.getGeckoKey()))
+                .uri(URI.create(apiConfig.getCoingeckoUrl() + url + "?x_cg_demo_api_key=" + apiConfig.getCoingeckoApikey()))
                 .header("Accept", "application/json")
                 .GET()
                 .build();
     }
-    private HttpResponse<String> sendRequest(HttpRequest request) throws IOException, InterruptedException {
-        HttpClient httpClient = HttpClient.newHttpClient();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    private HttpRequest buildRequestForLastFm(String url) {
+        return HttpRequest.newBuilder()
+                .uri(URI.create(url + "api_key=" + apiConfig.getLastfmApikey() + "&format=json"))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
     }
-    private List<JsonNode> handleResponse(HttpResponse<String> response) throws JsonProcessingException {
-        if(response.statusCode() == 200) {
-            String responseBody = response.body();
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode[] jsonNode = objectMapper.readValue(responseBody, JsonNode[].class);
-            List<JsonNode> ParserDTOList = Arrays.asList(jsonNode);
-            return ParserDTOList;
-        } else {
-            log.warn("Error: Unable to fetch from API response. Status code: " + response.statusCode());
-            return Collections.emptyList();
-        }
+    public List<SongDTO> saveTracksAsEntity(List<Track> tracks) {
+        List<SongDTO> songDTOS = trackMapper.trackToSongDTOList(tracks);
+        songRepository.saveAll(songMapper.mapSongDTOtoSongEntityList(songDTOS));
+        return songDTOS;
     }
-
 }
 

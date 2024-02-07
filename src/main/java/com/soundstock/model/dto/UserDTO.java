@@ -1,13 +1,14 @@
 package com.soundstock.model.dto;
 
 import com.soundstock.enums.UserRole;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Value
 @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
     Long id;
     String username;

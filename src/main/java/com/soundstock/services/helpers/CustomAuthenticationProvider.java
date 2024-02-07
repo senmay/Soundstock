@@ -1,5 +1,6 @@
-package com.soundstock.services;
+package com.soundstock.services.helpers;
 
+import com.soundstock.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;

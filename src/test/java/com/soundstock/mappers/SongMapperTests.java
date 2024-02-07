@@ -22,8 +22,8 @@ public class SongMapperTests {
     public void test_mapSongEntityToDTOList_withListOfSongEntities() {
         // Given
         List<SongEntity> songEntities = new ArrayList<>();
-        songEntities.add(new SongEntity(1L, "Song 1", new ArtistEntity(), 180, new AlbumEntity()));
-        songEntities.add(new SongEntity(2L, "Song 2", new ArtistEntity(), 200, new AlbumEntity()));
+        songEntities.add(new SongEntity(1L, "Song 1", new ArtistEntity(), 180, new AlbumEntity(), 10000L));
+        songEntities.add(new SongEntity(2L, "Song 2", new ArtistEntity(), 200, new AlbumEntity(), 10002L));
 
         // When
         List<SongDTO> songDTOs = songMapper.mapSongEntityToDTOList(songEntities);
@@ -39,7 +39,7 @@ public class SongMapperTests {
     @Test
     public void test_mapSongEntityToSongDTO_withSongEntity() {
         // Given
-        SongEntity songEntity = new SongEntity(1L, "Song 1", new ArtistEntity(), 180, new AlbumEntity());
+        SongEntity songEntity = new SongEntity(1L, "Song 1", new ArtistEntity(), 180, new AlbumEntity(), 1000L);
 
         // When
         SongDTO songDTO = songMapper.mapSongEntityToSongDTO(songEntity);

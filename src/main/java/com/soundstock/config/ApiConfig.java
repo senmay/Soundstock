@@ -1,8 +1,10 @@
 package com.soundstock.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @ConfigurationProperties(prefix = "api")
@@ -11,12 +13,14 @@ import org.springframework.context.annotation.Configuration;
 
 public class ApiConfig {
     @Value("${coingecko.url}")
-    private String geckoUrl;
+    private String coingeckoUrl;
     @Value("${coingecko.apikey}")
-    private String geckoKey;
-    @Value("${lastfm.url}")
-    private String lastFmUrl;
+    private String coingeckoApikey;
     @Value("${lastfm.apikey}")
-    private String lastFmKey;
+    private String lastfmApikey;
+    @Bean
+    ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
 
 }

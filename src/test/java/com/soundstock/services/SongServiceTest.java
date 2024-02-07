@@ -7,6 +7,7 @@ import com.soundstock.model.dto.SongDTO;
 import com.soundstock.model.entity.SongEntity;
 import com.soundstock.repository.SongRepository;
 import com.soundstock.testdata.ResourceFactory;
+import jakarta.persistence.EntityExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class SongServiceTest extends ResourceFactory {
+class SongServiceTest extends ResourceFactory {
     private SongService songService;
     @Mock
     private SongRepository songRepository;
@@ -37,7 +38,7 @@ public class SongServiceTest extends ResourceFactory {
 
 
     @Test
-    public void test_getAllSongs() {
+    void test_getAllSongs() {
         // Given
         List<SongEntity> songEntities = provideSongEntityList(3);
         when(songRepository.findAll()).thenReturn(songEntities);
@@ -58,7 +59,7 @@ public class SongServiceTest extends ResourceFactory {
     }
 
     @Test
-    public void test_valid_song_title() {
+    void test_valid_song_title() {
         // Given
         String title = "Valid Song Title";
         SongEntity songEntity = provideSongEntity();
@@ -75,7 +76,7 @@ public class SongServiceTest extends ResourceFactory {
 
     // Should throw ObjectNotFound when given a non-existent song title
     @Test
-    public void test_nonexistent_song_title() {
+    void test_nonexistent_song_title() {
         // Given
         String title = "Nonexistent Song Title";
         when(songRepository.findByTitle(title)).thenReturn(Optional.empty());
@@ -85,7 +86,7 @@ public class SongServiceTest extends ResourceFactory {
     }
 
     @Test
-    public void test_addSong_validSongDTO() {
+    void test_addSong_validSongDTO() {
         // Given
         SongDTO songDTO = provideRandomSong();
         when(songRepository.findByTitleAndArtist_Name(songDTO.getTitle(), songDTO.getArtist().getName())).thenReturn(Optional.empty());
@@ -99,19 +100,19 @@ public class SongServiceTest extends ResourceFactory {
     }
 
     @Test
-    public void test_addSong_existingSong() {
+    void test_addSong_existingSong() {
         // Given
         SongDTO songDTO = provideRandomSong();
         SongEntity songEntity = songMapper.mapSongDTOtoSongEntity(songDTO);
         when(songRepository.findByTitleAndArtist_Name(songDTO.getTitle(), songDTO.getArtist().getName())).thenReturn(Optional.of(songEntity));
 
         // When/Then
-        assertThrows(ObjectNotFound.class, () -> songService.addSong(songDTO));
+        assertThrows(EntityExistsException.class, () -> songService.addSong(songDTO));
         verify(songRepository, times(0)).save(songEntity);
     }
 
     @Test
-    public void test_addSong_songAlreadyExists() {
+    void test_addSong_songAlreadyExists() {
         // Given
         SongDTO songDTO = provideRandomSong();
         SongEntity existingSongEntity = songMapper.mapSongDTOtoSongEntity(songDTO);
@@ -119,7 +120,7 @@ public class SongServiceTest extends ResourceFactory {
         when(songRepository.findByTitleAndArtist_Name(songDTO.getTitle(), songDTO.getArtist().getName())).thenReturn(existingSong);
 
         // When
-        Throwable exception = assertThrows(ObjectNotFound.class, () -> songService.addSong(songDTO));
+        Throwable exception = assertThrows(EntityExistsException.class, () -> songService.addSong(songDTO));
 
         // Then
         assertTrue(exception.getMessage().contains("Song already in database"));

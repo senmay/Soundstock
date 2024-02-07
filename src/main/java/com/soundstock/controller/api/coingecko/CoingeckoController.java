@@ -1,12 +1,13 @@
-package com.soundstock.controller;
+package com.soundstock.controller.api.coingecko;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.soundstock.config.ApiConfig;
-import com.soundstock.model.dto.CoingeckoStockDTO;
+import com.soundstock.model.dto.api.coingecko.CoingeckoStockDTO;
 import com.soundstock.services.ApiService;
-import com.soundstock.services.ScrappingService;
+import com.soundstock.services.helpers.ApiCoordinatorService;
+import com.soundstock.services.CsvService;
+import com.soundstock.services.helpers.SeleniumService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +18,14 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("api/v1")
+@RequestMapping("coin/v1")
 @Slf4j
-public class ApiController {
+public class CoingeckoController {
     private final ApiService apiService;
-    private final ApiConfig apiConfig;
-    private final ScrappingService scrapperService;
-    @GetMapping()
+    private final ApiCoordinatorService scrapperService;
+    private final CsvService csvService;
+    private final SeleniumService seleniumService;
+    @GetMapping("/coingecko")
     @ResponseStatus(HttpStatus.OK)
     public List<CoingeckoStockDTO> getCoinsFromCoingeckoApi(){
         log.info("Pobieranie listy kryptowalut");
@@ -31,27 +33,21 @@ public class ApiController {
     }
     @GetMapping("/coins")
     @ResponseStatus(HttpStatus.OK)
-    public List<CoingeckoStockDTO> getCoinsSelenium(){
+    public List<CoingeckoStockDTO> getCoinsSelenium(@Param("size") Integer size){
         log.info("Pobieranie listy kryptowalut");
-        return scrapperService.scrapCoinsFromSelenium();
+        return seleniumService.scrapCoinsFromSelenium(size);
     }
     @GetMapping("/coins2")
     @ResponseStatus(HttpStatus.OK)
-    public List<CoingeckoStockDTO> saveCoinsToCsv(){
+    public void saveCoinsToCsv(@Param("size") Integer size){
         log.info("Zapisywanie listy kryptowalut do pliku");
-        return scrapperService.saveCoinsToCsvAndReturnData();
+        scrapperService.fetchAndSaveCoinDataToCsv(size);
     }
 
     @GetMapping("/import")
     @ResponseStatus(HttpStatus.OK)
     public void importCoinsToDatabase(){
         log.info("Importowanie danych");
-        scrapperService.importCsvToDatabase();
-    }
-    @GetMapping("/songs")
-    @ResponseStatus(HttpStatus.OK)
-    public List<JsonNode> getMostPopularSongs(){
-        log.info("Pobieranie listy piosenek");
-        return apiService.getMostPopularSongs();
+        csvService.importCsvToDatabase();
     }
 }

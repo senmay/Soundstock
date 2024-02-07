@@ -1,4 +1,4 @@
-package com.soundstock.model.dto;
+package com.soundstock.model.dto.api.coingecko;
 
 import lombok.Data;
 
