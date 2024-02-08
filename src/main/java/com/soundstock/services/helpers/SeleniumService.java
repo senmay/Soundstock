@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Service
 @Slf4j
@@ -29,6 +30,7 @@ public class SeleniumService {
         List<CoingeckoStockDTO> coins = new ArrayList<>();
         try {
             navigateToCoinGecko();
+            //acceptCookies();
             scrollAndLoadAllCoins(size);
             coins = extractCoinData();
         } catch (Exception e) {
@@ -46,10 +48,11 @@ public class SeleniumService {
     private void scrollAndLoadAllCoins(Integer size) throws InterruptedException {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         long previousHeight = (long) js.executeScript("return document.body.scrollHeight");
+
         for (int i = 0; i < size; i++) {
             js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
             TimeUnit.SECONDS.sleep(2); // Oczekiwanie na załadowanie strony
-            wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Show More"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".btn.btn-primary.btn-sm.mt-3"))).click();
             TimeUnit.SECONDS.sleep(2); // Oczekiwanie na załadowanie nowych danych
             long newHeight = (long) js.executeScript("return document.body.scrollHeight");
             if (newHeight == previousHeight) {
@@ -74,16 +77,14 @@ public class SeleniumService {
         CoingeckoStockDTO coin = new CoingeckoStockDTO();
         coin.setName(safeGetText(row, ".tw-text-blue-500.tw-font-bold.lg\\:tw-block.tw-hidden"));
         coin.setSymbol(safeGetText(row, ".tw-hidden.d-lg-inline.font-normal.text-3xs.mt-1"));
-        coin.setPrice(new BigDecimal(safeGetText(row, "span[data-target='price.price']").replaceAll("[^\\d.]", "")));
+        coin.setPrice(cleanDataAndConvertToBigDecimal(safeGetText(row, "span[data-target='price.price']")));
         coin.setPrice1h(safeGetText(row, ".td-change1h > span"));
         coin.setPrice24h(safeGetText(row, ".td-change24h > span"));
         coin.setPrice7d(safeGetText(row, ".td-change7d > span"));
         coin.setPrice30d(safeGetText(row, ".td-change30d > span"));
-        String cleanedPrice = safeGetText(row, "span[data-target='price.price']").replaceAll("[^\\d.]", "");
-        log.debug("Próba konwersji na BigDecimal: {}", cleanedPrice);
-        coin.setCirculatingSupply(new BigDecimal(safeGetText(row, ".td-circulating_supply > div").replaceAll("[^\\d.]", "")));
+        coin.setCirculatingSupply(cleanDataAndConvertToBigDecimal(safeGetText(row, ".td-circulating_supply > div")));
         coin.setTotalSupply(safeGetText(row, ".td-total_supply > div"));
-        coin.setMarketCap(new BigDecimal(safeGetText(row, ".td-market_cap.cap .cap-price.text-right .no-wrap").replaceAll("[^\\d.]", "")));
+        coin.setMarketCap(cleanDataAndConvertToBigDecimal(safeGetText(row, ".td-market_cap.cap .cap-price.text-right .no-wrap")));
         return coin;
     }
     private static String safeGetText(WebElement row, String selector) {
@@ -91,6 +92,20 @@ public class SeleniumService {
             return row.findElement(By.cssSelector(selector)).getText();
         } catch (Exception e) {
             return "-";
+        }
+    }
+    private BigDecimal cleanDataAndConvertToBigDecimal(String data) {
+        if (data == null || data.isEmpty() || data.equals("-")) {
+            log.error("Ciąg jest pusty lub nieprawidłowy.");
+            return BigDecimal.ZERO; // Zwraca BigDecimal.ZERO w przypadku pustego ciągu
+        } else {
+            try {
+                String cleanedData = data.replaceAll("[^\\d.]", "");
+                return new BigDecimal(cleanedData);
+            } catch (NumberFormatException e) {
+                log.error("Błąd podczas konwersji '{}' na BigDecimal", data, e);
+                return BigDecimal.ZERO; // Zwraca BigDecimal.ZERO w przypadku błędu konwersji
+            }
         }
     }
 }

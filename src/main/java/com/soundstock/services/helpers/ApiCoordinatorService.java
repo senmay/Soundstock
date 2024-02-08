@@ -2,8 +2,8 @@ package com.soundstock.services.helpers;
 
 import com.soundstock.model.dto.api.coingecko.CoingeckoStockDTO;
 import com.soundstock.model.dto.api.lastfm.Track;
-import com.soundstock.services.ApiService;
 import com.soundstock.services.CsvService;
+import com.soundstock.services.api.LastFmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class ApiCoordinatorService {
 
     private final SeleniumService seleniumService;
     private final CsvService csvService;
-    private final ApiService apiService;
+    private final LastFmService lastFmService;
 
     public void fetchAndSaveCoinDataToCsv(Integer size) {
         // Pobieranie danych o kryptowalutach
@@ -25,7 +25,7 @@ public class ApiCoordinatorService {
         csvService.saveCoinsToCsv(coins);
     }
     public void fetchAndSaveTrackDataToDatabase(){
-        List<Track> mostPopularSongs = apiService.getMostPopularSongs();
-        apiService.saveTracksAsEntity(mostPopularSongs);
+        List<Track> mostPopularSongs = lastFmService.getMostPopularSongs();
+        lastFmService.saveTracksAsEntity(mostPopularSongs);
     }
 }

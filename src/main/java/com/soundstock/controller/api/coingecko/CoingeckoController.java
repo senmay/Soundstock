@@ -1,7 +1,7 @@
 package com.soundstock.controller.api.coingecko;
 
 import com.soundstock.model.dto.api.coingecko.CoingeckoStockDTO;
-import com.soundstock.services.ApiService;
+import com.soundstock.services.api.CoingeckoService;
 import com.soundstock.services.helpers.ApiCoordinatorService;
 import com.soundstock.services.CsvService;
 import com.soundstock.services.helpers.SeleniumService;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("coin/v1")
 @Slf4j
 public class CoingeckoController {
-    private final ApiService apiService;
+    private final CoingeckoService coingeckoService;
     private final ApiCoordinatorService scrapperService;
     private final CsvService csvService;
     private final SeleniumService seleniumService;
@@ -29,7 +29,7 @@ public class CoingeckoController {
     @ResponseStatus(HttpStatus.OK)
     public List<CoingeckoStockDTO> getCoinsFromCoingeckoApi(){
         log.info("Pobieranie listy kryptowalut");
-        return apiService.fetchCoins();
+        return coingeckoService.fetchCoins();
     }
     @GetMapping("/coins")
     @ResponseStatus(HttpStatus.OK)

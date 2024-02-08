@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @Data
 
 public class ApiConfig {
-    @Value("${coingecko.url}")
-    private String coingeckoUrl;
     @Value("${coingecko.apikey}")
     private String coingeckoApikey;
     @Value("${lastfm.apikey}")

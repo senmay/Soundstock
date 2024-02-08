@@ -1,8 +1,7 @@
 package com.soundstock.controller.api.lastfm;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.soundstock.model.dto.api.lastfm.Track;
-import com.soundstock.services.ApiService;
+import com.soundstock.services.api.LastFmService;
 import com.soundstock.services.helpers.ApiCoordinatorService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +18,13 @@ import java.util.List;
 @RequestMapping("lastfm/v1")
 @Slf4j
 public class LastFmController {
-    private final ApiService apiService;
+    private final LastFmService lastFmService;
     private final ApiCoordinatorService apiCoordinatorService;
     @GetMapping("/songs")
     @ResponseStatus(HttpStatus.OK)
     public List<Track> getMostPopularSongs(){
         log.info("Pobieranie listy piosenek");
-        return apiService.getMostPopularSongs();
+        return lastFmService.getMostPopularSongs();
     }
     @GetMapping("/import")
     @ResponseStatus(HttpStatus.OK)
