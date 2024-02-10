@@ -5,6 +5,8 @@ import com.soundstock.mapper.ArtistMapper;
 import com.soundstock.model.dto.ArtistDTO;
 import com.soundstock.model.entity.ArtistEntity;
 import com.soundstock.repository.ArtistRepository;
+import jakarta.persistence.EntityExistsException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,20 +47,18 @@ public class ArtistService {
         }
         return artistEntity;
     }
+    @Transactional
     public ArtistEntity addArtist(ArtistDTO artistDTO) {
-        checkIfArtistExists(artistDTO);
+        Optional<ArtistEntity> existingArtist = artistRepository.findByName(artistDTO.getName());
+        if (existingArtist.isPresent()) {
+            return existingArtist.get();
+        }
         ArtistEntity artistEntity = artistMapper.mapDTOToArtistEntity(artistDTO);
         return artistRepository.save(artistEntity);
     }
 
     public void deleteArtistById(Long id){
         artistRepository.deleteById(id);
-    }
-    private void checkIfArtistExists(ArtistDTO artistDTO){
-        Optional<ArtistEntity> existingArtist = artistRepository.findByName(artistDTO.getName());
-        if (existingArtist.isPresent()) {
-            throw new ObjectNotFound("Artist already in database", getClass());
-        }
     }
 
 }

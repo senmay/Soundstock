@@ -16,6 +16,8 @@ public class ApiConfig {
     private String coingeckoApikey;
     @Value("${lastfm.apikey}")
     private String lastfmApikey;
+    @Value("${spotify.accesstoken}")
+    private String spotifyAccessToken;
     @Bean
     ObjectMapper objectMapper() {
         return new ObjectMapper();

@@ -5,6 +5,11 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Artist {
+public class TrackLastFm {
     private String name;
+    private String duration;
+    private String playcount;
+    private String listeners;
+    private String url;
+    private ArtistLastFm artistLastFm;
 }

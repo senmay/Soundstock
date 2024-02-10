@@ -18,7 +18,7 @@ public class ArtistEntity {
     private Long id;
     @Column(unique = true,nullable = false)
     private String name;
-    @OneToMany(mappedBy = "artist")
-    private List<AlbumEntity> albums;
-
+    @ManyToMany(mappedBy = "artists")
+    private List<TrackEntity> tracks;
+    private String spotifyId;
 }

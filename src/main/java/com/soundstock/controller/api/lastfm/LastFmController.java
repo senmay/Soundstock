@@ -1,6 +1,6 @@
 package com.soundstock.controller.api.lastfm;
 
-import com.soundstock.model.dto.api.lastfm.Track;
+import com.soundstock.model.dto.api.lastfm.TrackLastFm;
 import com.soundstock.services.api.LastFmService;
 import com.soundstock.services.helpers.ApiCoordinatorService;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class LastFmController {
     private final ApiCoordinatorService apiCoordinatorService;
     @GetMapping("/songs")
     @ResponseStatus(HttpStatus.OK)
-    public List<Track> getMostPopularSongs(){
+    public List<TrackLastFm> getMostPopularSongs(){
         log.info("Pobieranie listy piosenek");
         return lastFmService.getMostPopularSongs();
     }

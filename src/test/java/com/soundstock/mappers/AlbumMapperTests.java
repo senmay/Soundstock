@@ -4,7 +4,7 @@ import com.soundstock.mapper.AlbumMapper;
 import com.soundstock.mapper.AlbumMapperImpl;
 import com.soundstock.model.dto.AlbumDTO;
 import com.soundstock.model.dto.ArtistDTO;
-import com.soundstock.model.dto.SongDTO;
+import com.soundstock.model.dto.TrackDTO;
 import com.soundstock.model.entity.AlbumEntity;
 import com.soundstock.model.entity.ArtistEntity;
 import com.soundstock.testdata.ResourceFactory;
@@ -123,7 +123,7 @@ public class AlbumMapperTests extends ResourceFactory {
 
         // Arrange
         ArtistDTO artistDTO = new ArtistDTO(1L, "Artist Name", null, null);
-        List<SongDTO> songs = new ArrayList<>();
+        List<TrackDTO> songs = new ArrayList<>();
         AlbumDTO albumDTO = provideAlbumDTO();
         albumDTO.setArtist(artistDTO);
         albumDTO.setSongs(songs);

@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TopTracks {
-    private List<Track> track;
+    private List<TrackLastFm> trackLastFm;
 }

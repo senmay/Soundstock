@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soundstock.config.ApiConfig;
-import com.soundstock.enums.ApiEndpoints;
 import com.soundstock.model.dto.api.coingecko.CoingeckoStockDTO;
 import com.soundstock.services.helpers.HttpClientService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.soundstock.enums.ApiEndpoints.*;
+import static com.soundstock.enums.ApiEndpointsConstants.COINGECKO_GET_COINLIST;
+
 
 @Service
 @Slf4j
@@ -50,7 +50,7 @@ public class CoingeckoService {
         }
         return coingeckoStockDTOList;
     }
-    private HttpRequest buildRequestForCoingecko(ApiEndpoints endpoint) {
+    private HttpRequest buildRequestForCoingecko(String endpoint) {
         return HttpRequest.newBuilder()
                 .uri(URI.create(endpoint + "?x_cg_demo_api_key=" + apiConfig.getCoingeckoApikey()))
                 .header("Accept", "application/json")

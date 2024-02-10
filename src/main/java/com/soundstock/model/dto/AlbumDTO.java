@@ -1,5 +1,6 @@
 package com.soundstock.model.dto;
 
+import com.soundstock.model.dto.api.spotify.ImageSpotify;
 import lombok.*;
 
 import java.util.List;
@@ -14,7 +15,10 @@ public class AlbumDTO {
     ArtistDTO artist;
     String genre;
     Integer year;
-    List<SongDTO> songs;
+    List<TrackDTO> songs;
     String image;
     String description;
+    String spotifyId;
+    String release_date;
+    String total_tracks;
 }

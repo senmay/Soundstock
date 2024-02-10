@@ -21,7 +21,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
-public class ArtistServiceTest extends ResourceFactory {
+public class ArtistLastFmServiceTest extends ResourceFactory {
     @InjectMocks
     private ArtistService artistService;
     @Mock

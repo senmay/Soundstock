@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soundstock.model.dto.ArtistDTO;
 import com.soundstock.model.dto.UserDTO;
 import com.soundstock.repository.ArtistRepository;
-import com.soundstock.repository.SongRepository;
+import com.soundstock.repository.TrackRepository;
 import com.soundstock.testdata.ResourceFactory;
 import jakarta.transaction.Transactional;
 import org.hamcrest.Matchers;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Transactional
-class ArtistControllerTest extends ResourceFactory {
+class ArtistLastFmControllerTest extends ResourceFactory {
     static Connection connection;
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +50,7 @@ class ArtistControllerTest extends ResourceFactory {
             .withExposedPorts(5432)
             .withInitScript("init.sql");
     @Autowired
-    private SongRepository songRepository;
+    private TrackRepository trackRepository;
 
     @DynamicPropertySource
     static void dynamicPropertyRegistry(DynamicPropertyRegistry registry) {
@@ -90,7 +90,7 @@ class ArtistControllerTest extends ResourceFactory {
     @Test
     void should_get_all_artists_with_user_credentials() throws Exception {
         List<ArtistDTO> artistDTOList = provideArtistDTOList(3);
-        songRepository.findAll();
+        trackRepository.findAll();
         String adminAccessToken = obtainAdminAccessToken();
         for (ArtistDTO artistDTO : artistDTOList) {
             mockMvc.perform(post("/artist/v1/add")

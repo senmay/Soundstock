@@ -4,16 +4,16 @@ import com.github.javafaker.Faker;
 import com.soundstock.mapper.*;
 import com.soundstock.model.dto.AlbumDTO;
 import com.soundstock.model.dto.ArtistDTO;
-import com.soundstock.model.dto.SongDTO;
+import com.soundstock.model.dto.TrackDTO;
 import com.soundstock.model.entity.AlbumEntity;
 import com.soundstock.model.entity.ArtistEntity;
-import com.soundstock.model.entity.SongEntity;
+import com.soundstock.model.entity.TrackEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResourceFactory {
-    SongMapper songMapper = new SongMapperImpl();
+    TrackMapper trackMapper = new TrackMapperImpl();
     ArtistMapper artistMapper = new ArtistMapperImpl();
     AlbumMapper albumMapper = new AlbumMapperImpl();
     Faker faker = new Faker();
@@ -57,8 +57,8 @@ public class ResourceFactory {
         return artistEntities;
     }
 
-    protected SongDTO provideRandomSong() {
-        return new SongDTO(
+    protected TrackDTO provideRandomSong() {
+        return new TrackDTO(
                 null,
                 faker.rockBand().name(),
                 provideArtistDTO(),
@@ -69,20 +69,20 @@ public class ResourceFactory {
         );
     }
 
-    protected List<SongDTO> provideRandomSongList(Integer size) {
-        List<SongDTO> songList = new ArrayList<>();
+    protected List<TrackDTO> provideRandomSongList(Integer size) {
+        List<TrackDTO> songList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             songList.add(provideRandomSong());
         }
         return songList;
     }
 
-    protected SongEntity provideSongEntity() {
-        return songMapper.mapSongDTOtoSongEntity(provideRandomSong());
+    protected TrackEntity provideSongEntity() {
+        return trackMapper.mapTrackDTOtoTrackEntity(provideRandomSong());
     }
 
-    protected List<SongEntity> provideSongEntityList(Integer size) {
-        List<SongEntity> songEntities = new ArrayList<>();
+    protected List<TrackEntity> provideSongEntityList(Integer size) {
+        List<TrackEntity> songEntities = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             songEntities.add(provideSongEntity());
         }

@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ArtistMapperTests {
+public class ArtistLastFmMapperTests {
     ArtistMapper artistMapper = new ArtistMapperImpl();
     @Test
     public void test_mapArtistEntityToDTO() {

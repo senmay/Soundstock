@@ -40,7 +40,8 @@ public class SecurityConfig {
             "/artist/v1/add", "/artist/v1/id",
             "/album/v1/add",
             "/coin/v1/coins", "/coin/v1/coins2", "/coin/v1/import", "/coin/v1/coingecko",
-            "/lastfm/v1/songs", "/lastfm/v1/import"};
+            "/lastfm/v1/songs", "/lastfm/v1/import",
+            "/spotify/v1/yearly-top-tracks", "/spotify/v1/fetch-and-save"};
     private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/user/v1/userinfo", "/order/v1/add",
             "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test"};
     private final String[] SWAGGER_WHITELIST = {

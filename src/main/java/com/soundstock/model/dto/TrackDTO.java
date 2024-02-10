@@ -2,13 +2,18 @@ package com.soundstock.model.dto;
 
 import lombok.Value;
 
+import java.util.List;
+
 @Value
-public class SongDTO {
+public class TrackDTO {
     Long id;
     String title;
-    ArtistDTO artist;
+    List<ArtistDTO> artists;
     Integer duration;
     AlbumDTO album;
     Long playcount;
+    Integer popularity;
+    List<PlaylistDTO> playlists;
+    String spotifyId;
 
 }
