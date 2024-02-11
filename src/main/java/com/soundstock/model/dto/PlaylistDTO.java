@@ -1,23 +1,18 @@
 package com.soundstock.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class PlaylistDTO {
     Long id;
     String name;
-    List<TrackDTO> tracks;
+    List<SimpleTrackDTO> tracks;
     Long followers;
-    public void addTrack(TrackDTO track){
-        if (tracks == null){
-            tracks = new ArrayList<>();
-        }
-        tracks.add(track);        ;
-    }
 }

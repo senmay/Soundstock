@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import com.soundstock.mapper.*;
 import com.soundstock.model.dto.AlbumDTO;
 import com.soundstock.model.dto.ArtistDTO;
+import com.soundstock.model.dto.PlaylistDTO;
 import com.soundstock.model.dto.TrackDTO;
 import com.soundstock.model.entity.AlbumEntity;
 import com.soundstock.model.entity.ArtistEntity;
@@ -19,12 +20,12 @@ public class ResourceFactory {
     Faker faker = new Faker();
 
     protected ArtistDTO provideArtistDTO() {
-        List<AlbumDTO> albums = new ArrayList<>();
         return new ArtistDTO(
                 null,
                 faker.rockBand().name(),
                 faker.avatar().image(),
-                albums
+                null,
+                faker.lorem().word()
         );
     }
 
@@ -38,11 +39,11 @@ public class ResourceFactory {
 
     protected ArtistDTO provideArtistWithNameUserOneAndId1() {
         return new ArtistDTO(
-                1L, // ID
-                "UserOne", // Name
-                "testimage", // Image
-                new ArrayList<>() // Empty list of albums
-        );
+                1L,
+                "User One",
+                faker.lorem().word(),
+                provideAlbumDTOList(2),
+                faker.lorem().word());
     }
 
     protected ArtistEntity provideArtistEntity() {
@@ -57,34 +58,51 @@ public class ResourceFactory {
         return artistEntities;
     }
 
-    protected TrackDTO provideRandomSong() {
+    protected TrackDTO provideRandomTrack() {
         return new TrackDTO(
                 null,
-                faker.rockBand().name(),
-                provideArtistDTO(),
-                faker.number().numberBetween(120, 300), // Duration in seconds
-                null,
-                faker.number().numberBetween(1,1000000L)//temporary null for album
-
+                faker.lorem().word(),
+               null,
+                faker.number().numberBetween(180, 300),
+                provideAlbumDTO(),
+                faker.number().randomNumber(),
+                faker.number().numberBetween(1, 100),
+                providePlaylistDTOList(2),
+                faker.lorem().word()
         );
     }
+    protected PlaylistDTO providePlaylistDTO(){
+        return new PlaylistDTO(
+                null,
+                faker.lorem().word(),
+                null,
+                100L
+        );
+    }
+    protected List<PlaylistDTO> providePlaylistDTOList(Integer size){
+        List<PlaylistDTO> playlistDTOS = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            playlistDTOS.add(providePlaylistDTO());
+        }
+        return playlistDTOS;
+    }
 
-    protected List<TrackDTO> provideRandomSongList(Integer size) {
+    protected List<TrackDTO> provideRandomTrackList(Integer size) {
         List<TrackDTO> songList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            songList.add(provideRandomSong());
+            songList.add(provideRandomTrack());
         }
         return songList;
     }
 
-    protected TrackEntity provideSongEntity() {
-        return trackMapper.mapTrackDTOtoTrackEntity(provideRandomSong());
+    protected TrackEntity provideTrackEntity() {
+        return trackMapper.mapTrackDTOtoTrackEntity(provideRandomTrack());
     }
 
-    protected List<TrackEntity> provideSongEntityList(Integer size) {
+    protected List<TrackEntity> provideTrackEntityList(Integer size) {
         List<TrackEntity> songEntities = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            songEntities.add(provideSongEntity());
+            songEntities.add(provideTrackEntity());
         }
         return songEntities;
     }
@@ -94,12 +112,15 @@ public class ResourceFactory {
         return new AlbumDTO(
                 null,
                 faker.lorem().word(),
-                null,
-                faker.music().genre(),
-                faker.number().numberBetween(1980, 2021),
-                null,
-                faker.internet().image(),
-                faker.lorem().sentence()
+                artistDTO,
+                faker.lorem().word(),
+                faker.number().numberBetween(1900, 2021),
+               null,
+                faker.avatar().image(),
+                faker.lorem().word(),
+                faker.lorem().word(),
+                faker.lorem().word(),
+                faker.lorem().word()
         );
     }
 

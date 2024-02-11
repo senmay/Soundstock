@@ -122,7 +122,7 @@ public class AlbumMapperTests extends ResourceFactory {
     public void test_mapping_album_dto_to_entity_with_all_fields_set() {
 
         // Arrange
-        ArtistDTO artistDTO = new ArtistDTO(1L, "Artist Name", null, null);
+        ArtistDTO artistDTO = provideArtistDTO();
         List<TrackDTO> songs = new ArrayList<>();
         AlbumDTO albumDTO = provideAlbumDTO();
         albumDTO.setArtist(artistDTO);

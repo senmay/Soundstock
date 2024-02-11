@@ -7,7 +7,7 @@ public class ApiEndpointsConstants {
     public static final String LAST_FM_GET_MOST_POPULAR_SONGS = "https://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&";
     public static final String COINGECKO_GET_COINLIST = "https://api.coingecko.com/api/v3//coins/list/";
     public static final String SPOTIFY_GET_TOP_TRACKS_FROM_2014 = "https://api.spotify.com/v1/playlists/37i9dQZF1DX0h0QnLkMBl4";
-    public static final String SPOTIFY_GET_TOP_TRACKS_FROM_2015 ="https://api.spotify.com/v1/playlists/37i9dQZF1DX4dyzvuaRJ0n";
+    public static final String SPOTIFY_GET_TOP_TRACKS_FROM_2015 ="https://api.spotify.com/v1/playlists/37i9dQZF1DX9ukdrXQLJGZ";
     public static final String SPOTIFY_GET_TOP_TRACKS_FROM_2016 ="https://api.spotify.com/v1/playlists/37i9dQZF1DX4dyzvuaRJ0n";
     public static final String SPOTIFY_GET_TOP_TRACKS_FROM_2017 ="https://api.spotify.com/v1/playlists/37i9dQZF1DX4dyzvuaRJ0n";
     public static final String SPOTIFY_GET_TOP_TRACKS_FROM_2018 ="https://api.spotify.com/v1/playlists/37i9dQZF1DX4dyzvuaRJ0n";

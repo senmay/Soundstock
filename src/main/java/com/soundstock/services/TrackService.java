@@ -1,7 +1,6 @@
 package com.soundstock.services;
 
 import com.soundstock.exceptions.ObjectNotFound;
-import com.soundstock.mapper.PlaylistMapper;
 import com.soundstock.mapper.TrackMapper;
 import com.soundstock.model.dto.PlaylistDTO;
 import com.soundstock.model.dto.TrackDTO;
@@ -18,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.soundstock.exceptions.ErrorMessages.SONG_EXISTS;
 import static com.soundstock.exceptions.ErrorMessages.SONG_NOT_FOUND;
@@ -45,14 +42,14 @@ public class TrackService {
         if (songEntity.isEmpty()) {
             throw new ObjectNotFound(SONG_NOT_FOUND, getClass());
         }
-        return trackMapper.mapTrackEntityToSongDTO(songEntity.get());
+        return trackMapper.mapTrackEntityToTrackDTO(songEntity.get());
     }
     public TrackDTO getTrackById(Long id) {
         Optional<TrackEntity> songEntity = trackRepository.findById(id);
         if (songEntity.isEmpty()) {
             throw new ObjectNotFound(SONG_NOT_FOUND, getClass());
         }
-        return trackMapper.mapTrackEntityToSongDTO(songEntity.get());
+        return trackMapper.mapTrackEntityToTrackDTO(songEntity.get());
     }
     @Transactional
     public String addTrack(TrackDTO trackDTO) {

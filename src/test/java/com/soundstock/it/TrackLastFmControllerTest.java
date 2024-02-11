@@ -67,7 +67,7 @@ class TrackLastFmControllerTest extends ResourceFactory {
 
     @Test
     void should_add_song_with_null_album_with_admin_credentials() throws Exception {
-        TrackEntity song = provideSongEntity();
+        TrackEntity song = provideTrackEntity();
         song.setAlbum(null);
 
         mockMvc.perform(post("/track/v1/add")
@@ -79,7 +79,7 @@ class TrackLastFmControllerTest extends ResourceFactory {
 
     @Test
     void should_throw_403_when_add_song_with_user_credentials() throws Exception {
-        TrackEntity song = provideSongEntity();
+        TrackEntity song = provideTrackEntity();
         song.setAlbum(null);
 
         mockMvc.perform(post("/track/v1/add")
@@ -92,7 +92,7 @@ class TrackLastFmControllerTest extends ResourceFactory {
     @Test
     void should_get_all_songs_with_user_credentials() throws Exception {
         //Adding songs with admin access token
-        List<TrackDTO> trackDTOS = provideRandomSongList(3);
+        List<TrackDTO> trackDTOS = provideRandomTrackList(3);
         trackRepository.findAll();
         String adminAccessToken = obtainAdminAccessToken();
         for (TrackDTO trackDTO : trackDTOS) {

@@ -1,5 +1,6 @@
 package com.soundstock.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +19,8 @@ public class ArtistEntity {
     private Long id;
     @Column(unique = true,nullable = false)
     private String name;
-    @ManyToMany(mappedBy = "artists")
-    private List<TrackEntity> tracks;
+    @OneToMany(mappedBy = "artist")
+    @JsonManagedReference
+    private List<AlbumEntity> albums;
     private String spotifyId;
 }

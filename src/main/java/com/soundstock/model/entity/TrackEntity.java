@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "songs")
+@Table(name = "tracks")
 public class TrackEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,7 +26,7 @@ public class TrackEntity {
             inverseJoinColumns = @JoinColumn(name = "artist_id")
     )
     private List<ArtistEntity> artists;
-    private Integer duration;
+    private Long duration;
     @ManyToOne(cascade = CascadeType.PERSIST,optional = true)
     @JoinColumn(name = "album_Id")
     private AlbumEntity album;

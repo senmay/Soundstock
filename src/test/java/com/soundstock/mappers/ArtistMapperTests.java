@@ -4,6 +4,7 @@ import com.soundstock.mapper.ArtistMapper;
 import com.soundstock.mapper.ArtistMapperImpl;
 import com.soundstock.model.dto.ArtistDTO;
 import com.soundstock.model.entity.ArtistEntity;
+import com.soundstock.testdata.ResourceFactory;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ArtistLastFmMapperTests {
+public class ArtistMapperTests extends ResourceFactory {
     ArtistMapper artistMapper = new ArtistMapperImpl();
     @Test
     public void test_mapArtistEntityToDTO() {
@@ -75,11 +76,7 @@ public class ArtistLastFmMapperTests {
     @Test
     public void test_mapArtistEntityToDTO_emptyAlbums() {
         // Arrange
-        ArtistEntity artistEntity = ArtistEntity.builder()
-                .id(1L)
-                .name("John Doe")
-                .albums(new ArrayList<>())
-                .build();
+        ArtistEntity artistEntity = provideArtistEntity();
 
         // Act
         ArtistDTO artistDTO = artistMapper.mapArtistEntityToDTO(artistEntity);
@@ -95,11 +92,7 @@ public class ArtistLastFmMapperTests {
     @Test
     public void test_mapArtistEntityToDTO_nullAlbums() {
         // Arrange
-        ArtistEntity artistEntity = ArtistEntity.builder()
-                .id(1L)
-                .name("John Doe")
-                .albums(null)
-                .build();
+        ArtistEntity artistEntity = provideArtistEntity();
 
         // Act
         ArtistDTO artistDTO = artistMapper.mapArtistEntityToDTO(artistEntity);

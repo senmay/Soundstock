@@ -13,6 +13,8 @@ import java.util.List;
 
 @Mapper
 public interface TrackSpotifyMapper {
+    @Mapping(target = "duration", source = "duration_ms")
+    @Mapping(target = "spotifyId", source = "spotifyId")
     TrackDTO mapTrackSpotifyToTrackDTO(TrackSpotify trackSpotify);
     List<TrackDTO> mapTrackSpotifyToTrackDTOList(List<TrackSpotify> trackSpotifyList);
     ArtistDTO artistSpotifyToArtistDTO(ArtistSpotify artistSpotify);

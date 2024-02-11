@@ -69,7 +69,6 @@ public class ApiCoordinatorService {
                     .name(playlistName)
                     .build();
             for (TrackDTO track : trackDTOs) {
-                newPlaylist.addTrack(track);
                 trackService.addTrack(track, newPlaylist);
             }
             log.info("Created new playlist with name: {} and added tracks", playlistName);

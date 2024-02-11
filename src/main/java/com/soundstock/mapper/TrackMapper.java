@@ -11,12 +11,13 @@ import java.util.List;
 @Mapper
 public interface TrackMapper {
     List<TrackDTO> mapTrackEntityToDTOList(List<TrackEntity> songEntities);
-    TrackDTO mapTrackEntityToSongDTO(TrackEntity trackEntity, CycleAvoidingMappingContext context);
-    @Mapping(target="artists", source = "trackDTO.artists")
-    @Mapping(target="id", ignore = true)
+    @Mapping(target = "artists", ignore = true)
+    @Mapping(target = "playlists", ignore = true)
+    @Mapping(target = "album", ignore = true)
+    TrackDTO mapTrackEntityToTrackDTO(TrackEntity trackEntity, CycleAvoidingMappingContext context);
     TrackEntity mapTrackDTOtoTrackEntity(TrackDTO trackDTO);
     List<TrackEntity> mapSongDTOtoSongEntityList(List<TrackDTO> trackDTOS);
-    default TrackDTO mapTrackEntityToSongDTO(TrackEntity trackEntity) {
-        return mapTrackEntityToSongDTO(trackEntity, new CycleAvoidingMappingContext());
+    default TrackDTO mapTrackEntityToTrackDTO(TrackEntity trackEntity) {
+        return mapTrackEntityToTrackDTO(trackEntity, new CycleAvoidingMappingContext());
     }
 }
