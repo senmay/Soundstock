@@ -16,12 +16,10 @@ import java.net.http.HttpResponse;
 public class HttpClientService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper;
-    private HttpResponse<String> sendRequest(HttpRequest request) throws IOException, InterruptedException {
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    }
     public <T> T sendRequest(HttpRequest request, Class<T> responseType) {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            log.debug(response.body());
             if (response.statusCode() == 200) {
                 return objectMapper.readValue(response.body(), responseType);
             } else {

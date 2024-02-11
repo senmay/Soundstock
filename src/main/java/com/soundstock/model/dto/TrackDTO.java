@@ -1,10 +1,13 @@
 package com.soundstock.model.dto;
 
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Value
+@Builder
+@Data
 public class TrackDTO {
     Long id;
     String title;

@@ -25,25 +25,25 @@ public class TrackController {
     @GetMapping("/getAll")
     @ResponseStatus(HttpStatus.OK)
     public List<TrackDTO> getAllTracks() {
-        return trackService.getAllSongs();
+        return trackService.getAllTracks();
     }
 
     @GetMapping("/getSong")
     @ResponseStatus(HttpStatus.OK)
     public TrackDTO getTrackByTitleAndArtist(@PathVariable String title) {
-        return trackService.getSongByTitle(title);
+        return trackService.getTrackByTitle(title);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTrackById(@PathVariable Long id) {
-        trackService.deleteSong(id);
+        trackService.deleteTrack(id);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public TrackDTO getTrackByTitleAndArtist(@PathVariable Long id) {
-        return trackService.getSongById(id);
+        return trackService.getTrackById(id);
     }
 
 

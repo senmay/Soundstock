@@ -1,11 +1,13 @@
 package com.soundstock.services;
 
 import com.soundstock.exceptions.ObjectNotFound;
+import com.soundstock.mapper.PlaylistMapper;
 import com.soundstock.mapper.TrackMapper;
-import com.soundstock.model.dto.ArtistDTO;
+import com.soundstock.model.dto.PlaylistDTO;
 import com.soundstock.model.dto.TrackDTO;
 import com.soundstock.model.entity.AlbumEntity;
 import com.soundstock.model.entity.ArtistEntity;
+import com.soundstock.model.entity.PlaylistEntity;
 import com.soundstock.model.entity.TrackEntity;
 import com.soundstock.repository.TrackRepository;
 import jakarta.persistence.EntityExistsException;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.soundstock.exceptions.ErrorMessages.SONG_EXISTS;
@@ -30,20 +33,21 @@ public class TrackService {
     private final TrackMapper trackMapper;
     private final ArtistService artistService;
     private final AlbumService albumService;
+    private final PlaylistService playlistService;
 
-    public List<TrackDTO> getAllSongs() {
+    public List<TrackDTO> getAllTracks() {
         List<TrackEntity> trackEntityList = trackRepository.findAll();
         return trackMapper.mapTrackEntityToDTOList(trackEntityList);
     }
 
-    public TrackDTO getSongByTitle(String title) {
+    public TrackDTO getTrackByTitle(String title) {
         Optional<TrackEntity> songEntity = trackRepository.findByTitle(title);
         if (songEntity.isEmpty()) {
             throw new ObjectNotFound(SONG_NOT_FOUND, getClass());
         }
         return trackMapper.mapTrackEntityToSongDTO(songEntity.get());
     }
-    public TrackDTO getSongById(Long id) {
+    public TrackDTO getTrackById(Long id) {
         Optional<TrackEntity> songEntity = trackRepository.findById(id);
         if (songEntity.isEmpty()) {
             throw new ObjectNotFound(SONG_NOT_FOUND, getClass());
@@ -56,17 +60,30 @@ public class TrackService {
         List<ArtistEntity> artists = trackDTO.getArtists().stream()
                 .map(artistService::addArtist)
                 .toList();
-
         AlbumEntity album = albumService.addAlbum(trackDTO.getAlbum());
-
         TrackEntity trackEntity = trackMapper.mapTrackDTOtoTrackEntity(trackDTO);
         trackEntity.setArtists(artists);
         trackEntity.setAlbum(album);
         trackRepository.save(trackEntity);
         return "Track added";
     }
+    @Transactional
+    public String addTrack(TrackDTO trackDTO, PlaylistDTO playlistDTO) {
+        checkIfTrackExists(trackDTO);
+        List<ArtistEntity> artists = trackDTO.getArtists().stream()
+                .map(artistService::addArtist)
+                .toList();
+        AlbumEntity album = albumService.addAlbum(trackDTO.getAlbum());
+        TrackEntity trackEntity = trackMapper.mapTrackDTOtoTrackEntity(trackDTO);
+        PlaylistEntity playlist = ensurePlaylistExists(playlistDTO);
+        trackEntity.setPlaylists(List.of(playlist));
+        trackEntity.setArtists(artists);
+        trackEntity.setAlbum(album);
+        trackRepository.save(trackEntity);
+        return "Track added";
+    }
 
-    public void deleteSong(Long id) {
+    public void deleteTrack(Long id) {
         trackRepository.deleteById(id);
     }
     private void checkIfTrackExists(TrackDTO trackDTO) {
@@ -75,11 +92,8 @@ public class TrackService {
             throw new EntityExistsException(SONG_EXISTS);
         }
     }
-
-    private void ensureArtistExists(List<ArtistDTO> artistDTO) {
-        for (ArtistDTO artist : artistDTO) {
-            artistService.getArtistByNameOptional(artist.getName())
-                    .orElseGet(() -> artistService.addArtist(artist));
-        }
+    private PlaylistEntity ensurePlaylistExists(PlaylistDTO playlistDTO) {
+        return playlistService.findByName(playlistDTO.getName())
+                .orElseGet(() -> playlistService.savePlaylist(playlistDTO));
     }
 }

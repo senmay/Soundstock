@@ -24,7 +24,7 @@ public class SpotifyController {
     private final ApiCoordinatorService apiCoordinatorService;
     @GetMapping("/yearly-top-tracks")
     public List<ItemSpotify> getYearlyTopTracks(@Param("year") Integer year) {
-        return spotifyService.getMostPopularSongsFromYear(year);
+        return spotifyService.getMostPopularSongsFromYear(year).getTracks().getItems();
     }
     @GetMapping("/fetch-and-save")
     public void fetchAndSaveSpotifyTrackToDatabase(@Param("year") Integer year) {

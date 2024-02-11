@@ -1,10 +1,8 @@
 package com.soundstock.model.entity;
 
 
-import com.soundstock.model.dto.api.spotify.ImageSpotify;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class AlbumEntity {
     private String genre;
     private Integer year;
     @OneToMany(mappedBy = "album")
-    private List<TrackEntity> songs;
+    private List<TrackEntity> tracks;
     String image;
     String description;
     String spotifyId;

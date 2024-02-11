@@ -15,7 +15,7 @@ public class AlbumDTO {
     ArtistDTO artist;
     String genre;
     Integer year;
-    List<TrackDTO> songs;
+    List<TrackDTO> tracks;
     String image;
     String description;
     String spotifyId;

@@ -26,7 +26,7 @@ public class AlbumMapperTests extends ResourceFactory {
                 .artist(ArtistEntity.builder().id(1L).name("Artist Name").build())
                 .genre("Rock")
                 .year(2022)
-                .songs(new ArrayList<>())
+                .tracks(new ArrayList<>())
                 .image("album_image.jpg")
                 .description("Album Description")
                 .build();
@@ -41,7 +41,7 @@ public class AlbumMapperTests extends ResourceFactory {
         assertEquals(albumEntity.getArtist().getName(), albumDTO.getArtist().getName());
         assertEquals(albumEntity.getGenre(), albumDTO.getGenre());
         assertEquals(albumEntity.getYear(), albumDTO.getYear());
-        assertEquals(albumEntity.getSongs().size(), albumDTO.getSongs().size());
+        assertEquals(albumEntity.getTracks().size(), albumDTO.getTracks().size());
         assertEquals(albumEntity.getImage(), albumDTO.getImage());
         assertEquals(albumEntity.getDescription(), albumDTO.getDescription());
     }
@@ -57,7 +57,7 @@ public class AlbumMapperTests extends ResourceFactory {
                 .artist(ArtistEntity.builder().id(1L).name("Artist 1").build())
                 .genre("Rock")
                 .year(2022)
-                .songs(new ArrayList<>())
+                .tracks(new ArrayList<>())
                 .image("album_image_1.jpg")
                 .description("Album 1 Description")
                 .build());
@@ -67,7 +67,7 @@ public class AlbumMapperTests extends ResourceFactory {
                 .artist(ArtistEntity.builder().id(2L).name("Artist 2").build())
                 .genre("Pop")
                 .year(2023)
-                .songs(new ArrayList<>())
+                .tracks(new ArrayList<>())
                 .image("album_image_2.jpg")
                 .description("Album 2 Description")
                 .build());
@@ -86,7 +86,7 @@ public class AlbumMapperTests extends ResourceFactory {
             assertEquals(albumEntity.getArtist().getName(), albumDTO.getArtist().getName());
             assertEquals(albumEntity.getGenre(), albumDTO.getGenre());
             assertEquals(albumEntity.getYear(), albumDTO.getYear());
-            assertEquals(albumEntity.getSongs().size(), albumDTO.getSongs().size());
+            assertEquals(albumEntity.getTracks().size(), albumDTO.getTracks().size());
             assertEquals(albumEntity.getImage(), albumDTO.getImage());
             assertEquals(albumEntity.getDescription(), albumDTO.getDescription());
         }
@@ -126,7 +126,7 @@ public class AlbumMapperTests extends ResourceFactory {
         List<TrackDTO> songs = new ArrayList<>();
         AlbumDTO albumDTO = provideAlbumDTO();
         albumDTO.setArtist(artistDTO);
-        albumDTO.setSongs(songs);
+        albumDTO.setTracks(songs);
 
         // Act
         AlbumEntity albumEntity = albumMapper.mapDTOToAlbumEntity(albumDTO);
@@ -138,7 +138,7 @@ public class AlbumMapperTests extends ResourceFactory {
         assertEquals(albumDTO.getArtist().getName(), albumEntity.getArtist().getName());
         assertEquals(albumDTO.getGenre(), albumEntity.getGenre());
         assertEquals(albumDTO.getYear(), albumEntity.getYear());
-        assertEquals(albumDTO.getSongs().size(), albumEntity.getSongs().size());
+        assertEquals(albumDTO.getTracks().size(), albumEntity.getTracks().size());
     }
 
 }
