@@ -1,23 +1,38 @@
 package com.soundstock.mapper;
 
+import com.soundstock.model.dto.SimpleTrackDTO;
 import com.soundstock.model.dto.TrackDTO;
+import com.soundstock.model.entity.ArtistEntity;
 import com.soundstock.model.entity.TrackEntity;
-import com.soundstock.util.CycleAvoidingMappingContext;
+import java.util.Collections;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper
 public interface TrackMapper {
-    List<TrackDTO> mapTrackEntityToDTOList(List<TrackEntity> songEntities);
+    List<TrackDTO> toDTOList(List<TrackEntity> songEntities);
     @Mapping(target = "artists", ignore = true)
     @Mapping(target = "playlists", ignore = true)
     @Mapping(target = "album", ignore = true)
-    TrackDTO mapTrackEntityToTrackDTO(TrackEntity trackEntity, CycleAvoidingMappingContext context);
-    TrackEntity mapTrackDTOtoTrackEntity(TrackDTO trackDTO);
-    List<TrackEntity> mapSongDTOtoSongEntityList(List<TrackDTO> trackDTOS);
-    default TrackDTO mapTrackEntityToTrackDTO(TrackEntity trackEntity) {
-        return mapTrackEntityToTrackDTO(trackEntity, new CycleAvoidingMappingContext());
+    TrackDTO toDTO(TrackEntity trackEntity);
+    TrackEntity toEntity(TrackDTO trackDTO);
+    List<TrackEntity> toEntityList(List<TrackDTO> trackDTOS);
+    // Metoda mapująca TrackEntity na SimpleTrackDTO
+    @Mapping(target = "artistName", expression = "java(mapArtistsNames(trackEntity.getArtists()))")
+    @Mapping(target = "albumName", source = "album.title")
+    SimpleTrackDTO toSimpleDTO(TrackEntity trackEntity);
+    List<SimpleTrackDTO> toSimpleDTO(List<TrackEntity> trackEntities);
+
+    // Pomocnicza metoda do mapowania nazw artystów
+    default List<String> mapArtistsNames(List<ArtistEntity> artists) {
+        if (artists == null) {
+            return Collections.emptyList();
+        }
+        return artists.stream()
+                .map(ArtistEntity::getName)
+                .toList();
     }
 }

@@ -11,4 +11,8 @@ public class SimpleTrackDTO {
     private Long id;
     private String title;
     private List<String> artistName;
+    private String albumName;
+    private Integer popularity;
+    private Long duration;
+
 }

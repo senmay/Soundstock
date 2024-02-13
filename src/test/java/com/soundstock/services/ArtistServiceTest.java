@@ -21,7 +21,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
-public class ArtistLastFmServiceTest extends ResourceFactory {
+public class ArtistServiceTest extends ResourceFactory {
     @InjectMocks
     private ArtistService artistService;
     @Mock
@@ -106,7 +106,7 @@ public class ArtistLastFmServiceTest extends ResourceFactory {
     public void test_addArtist() {
         // Given
         ArtistDTO artistDTO = provideArtistDTO();
-        ArtistEntity artistEntity = artistMapper.mapDTOToArtistEntity(artistDTO);
+        ArtistEntity artistEntity = artistMapper.toEntity(artistDTO);
         when(artistRepository.findByName(artistDTO.getName())).thenReturn(Optional.empty());
         when(artistRepository.save(artistEntity)).thenReturn(artistEntity);
 
@@ -145,7 +145,7 @@ public class ArtistLastFmServiceTest extends ResourceFactory {
     public void test_addArtist_ObjectNotFound() {
         // Given
         ArtistDTO artistDTO = provideArtistDTO();
-        ArtistEntity artistEntity = artistMapper.mapDTOToArtistEntity(artistDTO);
+        ArtistEntity artistEntity = artistMapper.toEntity(artistDTO);
         when(artistRepository.findByName(artistDTO.getName())).thenReturn(Optional.of(artistEntity));
 
         // Then

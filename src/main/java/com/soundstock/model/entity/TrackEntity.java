@@ -39,5 +39,18 @@ public class TrackEntity {
             inverseJoinColumns = @JoinColumn(name = "playlist_id")
     )
     private List<PlaylistEntity> playlists;
+    private String spotifyId;
+    public void addPlaylist(PlaylistEntity playlist){
+        if(this.playlists == null){
+            this.playlists = new ArrayList<>();
+        }
+        this.playlists.add(playlist);
+    }
+    public void addArtists(List<ArtistEntity> artists) {
+        this.artists = artists;
+    }
+    public void addAlbum(AlbumEntity album){
+        this.album = album;
+    }
 
 }

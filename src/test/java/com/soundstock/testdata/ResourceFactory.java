@@ -8,6 +8,7 @@ import com.soundstock.model.dto.PlaylistDTO;
 import com.soundstock.model.dto.TrackDTO;
 import com.soundstock.model.entity.AlbumEntity;
 import com.soundstock.model.entity.ArtistEntity;
+import com.soundstock.model.entity.PlaylistEntity;
 import com.soundstock.model.entity.TrackEntity;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class ResourceFactory {
     TrackMapper trackMapper = new TrackMapperImpl();
     ArtistMapper artistMapper = new ArtistMapperImpl();
     AlbumMapper albumMapper = new AlbumMapperImpl();
+    PlaylistMapper playlistMapper = new PlaylistMapperImpl();
     Faker faker = new Faker();
 
     protected ArtistDTO provideArtistDTO() {
@@ -47,7 +49,7 @@ public class ResourceFactory {
     }
 
     protected ArtistEntity provideArtistEntity() {
-        return artistMapper.mapDTOToArtistEntity(provideArtistDTO());
+        return artistMapper.toEntity(provideArtistDTO());
     }
 
     protected List<ArtistEntity> provideAristEntityList(Integer size) {
@@ -58,12 +60,12 @@ public class ResourceFactory {
         return artistEntities;
     }
 
-    protected TrackDTO provideRandomTrack() {
+    protected TrackDTO provideRandomTrackDTO() {
         return new TrackDTO(
                 null,
                 faker.lorem().word(),
                null,
-                faker.number().numberBetween(180, 300),
+                (long) faker.number().numberBetween(180, 300),
                 provideAlbumDTO(),
                 faker.number().randomNumber(),
                 faker.number().numberBetween(1, 100),
@@ -79,6 +81,9 @@ public class ResourceFactory {
                 100L
         );
     }
+    protected PlaylistEntity providePlaylistEntity(){
+        return playlistMapper.mapPlaylistDTOtoPlaylistEntity(providePlaylistDTO());
+    }
     protected List<PlaylistDTO> providePlaylistDTOList(Integer size){
         List<PlaylistDTO> playlistDTOS = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -90,13 +95,13 @@ public class ResourceFactory {
     protected List<TrackDTO> provideRandomTrackList(Integer size) {
         List<TrackDTO> songList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            songList.add(provideRandomTrack());
+            songList.add(provideRandomTrackDTO());
         }
         return songList;
     }
 
     protected TrackEntity provideTrackEntity() {
-        return trackMapper.mapTrackDTOtoTrackEntity(provideRandomTrack());
+        return trackMapper.toEntity(provideRandomTrackDTO());
     }
 
     protected List<TrackEntity> provideTrackEntityList(Integer size) {
@@ -112,9 +117,8 @@ public class ResourceFactory {
         return new AlbumDTO(
                 null,
                 faker.lorem().word(),
-                artistDTO,
-                faker.lorem().word(),
-                faker.number().numberBetween(1900, 2021),
+                null,
+                faker.number().numberBetween(1, 100),
                null,
                 faker.avatar().image(),
                 faker.lorem().word(),
@@ -126,7 +130,7 @@ public class ResourceFactory {
 
     protected AlbumEntity provideAlbumEntity() {
         AlbumDTO albumDTO = provideAlbumDTO();
-        return albumMapper.mapDTOToAlbumEntity(albumDTO);
+        return albumMapper.toEntity(albumDTO);
     }
 
     protected List<AlbumDTO> provideAlbumDTOList(Integer size) {

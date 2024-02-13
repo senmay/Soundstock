@@ -1,5 +1,6 @@
 package com.soundstock.controller;
 
+import com.soundstock.model.dto.SimpleTrackDTO;
 import com.soundstock.model.dto.TrackDTO;
 import com.soundstock.services.TrackService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class TrackController {
 
     @GetMapping("/getAll")
     @ResponseStatus(HttpStatus.OK)
-    public List<TrackDTO> getAllTracks() {
+    public List<SimpleTrackDTO> getAllTracks() {
         return trackService.getAllTracks();
     }
 
@@ -45,7 +46,6 @@ public class TrackController {
     public TrackDTO getTrackByTitleAndArtist(@PathVariable Long id) {
         return trackService.getTrackById(id);
     }
-
 
 
 }

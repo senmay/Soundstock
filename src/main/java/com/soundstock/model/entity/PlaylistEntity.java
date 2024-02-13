@@ -21,4 +21,10 @@ public class PlaylistEntity {
     @ManyToMany(mappedBy = "playlists")
     List<TrackEntity> tracks;
     Long followers;
+    public void addTrack(TrackEntity track){
+        if (tracks == null){
+            tracks = new ArrayList<>();
+        }
+        tracks.add(track);
+    }
 }

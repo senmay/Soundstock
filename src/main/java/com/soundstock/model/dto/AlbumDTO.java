@@ -15,7 +15,6 @@ public class AlbumDTO {
     Long id;
     String title;
     ArtistDTO artist;
-    String genre;
     Integer year;
     List<TrackDTO> tracks;
     String image;

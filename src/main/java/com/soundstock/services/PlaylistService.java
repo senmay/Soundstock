@@ -31,10 +31,17 @@ public class PlaylistService {
         return playlistRepository.findByName(name);
     }
     public PlaylistEntity savePlaylist(PlaylistDTO playlist){
-        return playlistRepository.save(playlistMapper.mapPlaylistDTOtoPlaylistEntity(playlist));
+        return playlistRepository.save(playlistMapper.toEntity(playlist));
+    }
+    public PlaylistEntity savePlaylist(PlaylistEntity playlist){
+        return playlistRepository.save(playlist);
     }
     public List<PlaylistDTO> getAllPlaylists(){
-        return playlistMapper.mapPlaylistEntityListToPlaylistDTOList(playlistRepository.findAll());
+        return playlistMapper.toDTOList(playlistRepository.findAll());
+    }
+    public PlaylistEntity ensurePlaylistExists(String name) {
+        return findByName(name)
+                .orElseGet(() -> savePlaylist(PlaylistEntity.builder().name(name).build()));
     }
 
 }

@@ -63,7 +63,6 @@ class AlbumServiceTest extends ResourceFactory {
 
             assertEquals(albumEntity.getId(), albumDTO.getId());
             assertEquals(albumEntity.getTitle(), albumDTO.getTitle());
-            assertEquals(albumEntity.getGenre(), albumDTO.getGenre());
             assertEquals(albumEntity.getYear(), albumDTO.getYear());
             assertEquals(albumEntity.getImage(), albumDTO.getImage());
             assertEquals(albumEntity.getDescription(), albumDTO.getDescription());

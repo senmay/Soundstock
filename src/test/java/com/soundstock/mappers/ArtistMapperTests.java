@@ -23,7 +23,7 @@ public class ArtistMapperTests extends ResourceFactory {
                 .build();
 
         // Act
-        ArtistDTO artistDTO = artistMapper.mapArtistEntityToDTO(artistEntity);
+        ArtistDTO artistDTO = artistMapper.toDTO(artistEntity);
 
         // Assert
         assertEquals(artistEntity.getId(), artistDTO.getId());
@@ -46,7 +46,7 @@ public class ArtistMapperTests extends ResourceFactory {
                 .build());
 
         // Act
-        List<ArtistDTO> artistDTOs = artistMapper.mapArtistEntitesToDTOList(artistEntities);
+        List<ArtistDTO> artistDTOs = artistMapper.toDTOList(artistEntities);
 
         // Assert
         assertEquals(artistEntities.size(), artistDTOs.size());
@@ -66,7 +66,7 @@ public class ArtistMapperTests extends ResourceFactory {
         List<ArtistEntity> artistEntities = new ArrayList<>();
 
         // Act
-        List<ArtistDTO> artistDTOs = artistMapper.mapArtistEntitesToDTOList(artistEntities);
+        List<ArtistDTO> artistDTOs = artistMapper.toDTOList(artistEntities);
 
         // Assert
         assertNotNull(artistDTOs);
@@ -79,7 +79,7 @@ public class ArtistMapperTests extends ResourceFactory {
         ArtistEntity artistEntity = provideArtistEntity();
 
         // Act
-        ArtistDTO artistDTO = artistMapper.mapArtistEntityToDTO(artistEntity);
+        ArtistDTO artistDTO = artistMapper.toDTO(artistEntity);
 
         // Assert
         assertEquals(artistEntity.getId(), artistDTO.getId());
@@ -95,7 +95,7 @@ public class ArtistMapperTests extends ResourceFactory {
         ArtistEntity artistEntity = provideArtistEntity();
 
         // Act
-        ArtistDTO artistDTO = artistMapper.mapArtistEntityToDTO(artistEntity);
+        ArtistDTO artistDTO = artistMapper.toDTO(artistEntity);
 
         // Assert
         assertEquals(artistEntity.getId(), artistDTO.getId());

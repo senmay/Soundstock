@@ -49,7 +49,7 @@ public class LastFmService {
                 .build();
     }
     public List<TrackDTO> saveTracksAsEntity(List<TrackLastFm> trackLastFms) {
-        List<TrackDTO> trackDTOS = trackLastFmMapper.trackToTrackDTOList(trackLastFms);
+        List<TrackDTO> trackDTOS = trackLastFmMapper.toDTO(trackLastFms);
         for (TrackDTO trackDTO : trackDTOS) {
             // Sprawdź i dodaj artystów, jeśli nie istnieją
             for(ArtistDTO artistDTO : trackDTO.getArtists()) {
@@ -58,7 +58,7 @@ public class LastFmService {
                 }
             }
             // Zapisz utwór niezależnie od tego, czy artyści istnieli wcześniej
-            trackRepository.save(trackMapper.mapTrackDTOtoTrackEntity(trackDTO));
+            trackRepository.save(trackMapper.toEntity(trackDTO));
         }
         return trackDTOS;
     }

@@ -89,7 +89,7 @@ class UserControllerTest {
                 .role(UserRole.USER)
                 .build();
 
-        userRepository.save(userMapper.mapToUserEntity(userDTO));
+        userRepository.save(userMapper.toEntity(userDTO));
 
         mockMvc.perform(post("/user/v1/register")
                         .contentType(MediaType.APPLICATION_JSON)

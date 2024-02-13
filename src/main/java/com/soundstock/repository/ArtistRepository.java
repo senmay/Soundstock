@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-
 public interface ArtistRepository extends JpaRepository<ArtistEntity,Long> {
     @Query("select (count(a) > 0) from ArtistEntity a where upper(a.name) = upper(?1)")
     boolean existsByNameIgnoreCase(String name);

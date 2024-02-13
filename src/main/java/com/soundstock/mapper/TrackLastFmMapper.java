@@ -2,7 +2,6 @@ package com.soundstock.mapper;
 
 import com.soundstock.model.dto.ArtistDTO;
 import com.soundstock.model.dto.TrackDTO;
-import com.soundstock.model.dto.api.lastfm.ArtistLastFm;
 import com.soundstock.model.dto.api.lastfm.TrackLastFm;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,8 +18,8 @@ public interface TrackLastFmMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "album", ignore = true)
     @Mapping(source = "playcount", target = "playcount", qualifiedByName = "stringToLong")
-    TrackDTO trackToTrackDTO(TrackLastFm trackLastFm);
-    List<TrackDTO> trackToTrackDTOList(List<TrackLastFm> trackLastFms);
+    TrackDTO toDTO(TrackLastFm trackLastFm);
+    List<TrackDTO> toDTO(List<TrackLastFm> trackLastFms);
     @Named("stringToInteger")
     default Integer stringToInteger(String value) {
         return value != null ? Integer.parseInt(value) : null;

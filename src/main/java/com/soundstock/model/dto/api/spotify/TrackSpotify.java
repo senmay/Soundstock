@@ -11,8 +11,8 @@ public class TrackSpotify {
     private String spotifyId;
     @JsonProperty("name")
     private String title;
-    private Integer popularity;
-    private Long duration_ms;
+    private String popularity;
+    private String duration_ms;
     private List<ArtistSpotify> artists;
     private AlbumSpotify album;
 

@@ -25,13 +25,13 @@ public class StockService {
         if (stockRepository.existsByName(stockDTO.getName())){
             throw new EntityExistsException(USERNAME_OR_EMAIL_EXISTS);
         }
-        StockEntity stockEntity = stockMapper.mapDTOToAStockEntity(stockDTO);
+        StockEntity stockEntity = stockMapper.toEntity(stockDTO);
         stockRepository.save(stockEntity);
         return "Stock created successfully";
     }
 
     public List<StockDTO> getAllStocks() {
-        return stockMapper.mapStockEntitiesToDTOList(stockRepository.findAll());
+        return stockMapper.toDTO(stockRepository.findAll());
     }
 
     public String deleteStock(StockDTO stockDTO) {
@@ -46,6 +46,6 @@ public class StockService {
         if (!stockRepository.existsById((id))){
             throw new ObjectNotFound("Stock doesn't exist");
         }
-        return stockMapper.mapStockEntityToDTO(stockRepository.findById(id).get());
+        return stockMapper.toDTO(stockRepository.findById(id).get());
     }
 }

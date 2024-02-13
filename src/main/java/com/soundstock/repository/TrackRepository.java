@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface TrackRepository extends JpaRepository<TrackEntity, Long> {
     Optional<TrackEntity> findByTitle(String title);
+    Optional<TrackEntity> findBySpotifyId(String spotifyId);
 }

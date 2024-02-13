@@ -21,7 +21,6 @@ public class AlbumEntity {
     private String title;
     @ManyToOne
     @JoinColumn(name = "artist_id")
-    @JsonBackReference
     private ArtistEntity artist;
     private String genre;
     private Integer year;

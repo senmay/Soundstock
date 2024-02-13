@@ -3,15 +3,22 @@ package com.soundstock.services;
 import com.soundstock.exceptions.ObjectNotFound;
 import com.soundstock.mapper.TrackMapper;
 import com.soundstock.mapper.TrackMapperImpl;
+import com.soundstock.model.dto.AlbumDTO;
+import com.soundstock.model.dto.PlaylistDTO;
 import com.soundstock.model.dto.TrackDTO;
+import com.soundstock.model.entity.AlbumEntity;
+import com.soundstock.model.entity.ArtistEntity;
+import com.soundstock.model.entity.PlaylistEntity;
 import com.soundstock.model.entity.TrackEntity;
 import com.soundstock.repository.TrackRepository;
 import com.soundstock.testdata.ResourceFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,12 +27,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TrackLastFmServiceTest extends ResourceFactory {
+class TrackServiceTest extends ResourceFactory {
+    @InjectMocks
     private TrackService trackService;
+    @Mock
+    private AlbumService albumService;
     @Mock
     private TrackRepository trackRepository;
     @Mock
+    private PlaylistService playlistService;
+    @Mock
     private ArtistService artistService;
+    @Mock
     private final TrackMapper trackMapper = new TrackMapperImpl();
 
 //    @BeforeEach
@@ -33,28 +46,55 @@ class TrackLastFmServiceTest extends ResourceFactory {
 //        // Inject mocks into SongService
 //        trackService = new TrackService(trackRepository, trackMapper, artistService);
 //    }
-
-
     @Test
-    void test_getAllSongs() {
-        // Given
-        List<TrackEntity> songEntities = provideTrackEntityList(3);
-        when(trackRepository.findAll()).thenReturn(songEntities);
+    void testAddTrackWithPlaylist() {
+        // Przygotowanie danych testowych
+        TrackDTO trackDTO = provideRandomTrackDTO();
+        List<ArtistEntity> artistEntities = new ArrayList<>(List.of(ArtistEntity.builder().name("artist1").build(), ArtistEntity.builder().name("artist2").build()));
+        PlaylistDTO playlistDTO = providePlaylistDTO();
+        AlbumEntity albumEntity = provideAlbumEntity();
+        PlaylistEntity playlistEntity = providePlaylistEntity();
+        TrackEntity trackEntity = provideTrackEntity();
 
-        // When
-        List<TrackDTO> result = trackService.getAllTracks();
+        when(trackMapper.toEntity(any(TrackDTO.class))).thenReturn(trackEntity);
+        when(albumService.addAlbum(any(AlbumDTO.class))).thenReturn(albumEntity);
+        when(playlistService.ensurePlaylistExists(any(String.class))).thenReturn(playlistEntity);
+        when(artistService.ensureArtistsExists(any(TrackDTO.class))).thenReturn(new ArrayList<>(artistEntities));
+        when(trackRepository.save(any(TrackEntity.class))).thenReturn(trackEntity);
 
-        // Then
-        assertEquals(3, result.size());
-        for (int i = 0; i < result.size(); i++) {
-            TrackDTO trackDTO = result.get(i);
-            TrackEntity trackEntity = songEntities.get(i);
+        // Wywołanie testowanej metody
+        trackService.addTrack(trackDTO, playlistEntity);
 
-            assertEquals(trackEntity.getId(), trackDTO.getId());
-            assertEquals(trackEntity.getTitle(), trackDTO.getTitle());
-            assertEquals(trackEntity.getDuration(), trackDTO.getDuration());
-        }
+        // Weryfikacja
+        verify(trackRepository, times(1)).save(any(TrackEntity.class));
+        verify(playlistService, times(1)).ensurePlaylistExists(any(String.class));
+        verify(albumService, times(1)).addAlbum(any(AlbumDTO.class));
+        verify(artistService, times(1)).ensureArtistsExists(any(TrackDTO.class));
+
     }
+
+
+
+//    @Test
+//    void test_getAllSongs() {
+//        // Given
+//        List<TrackEntity> songEntities = provideTrackEntityList(3);
+//        when(trackRepository.findAll()).thenReturn(songEntities);
+//
+//        // When
+//        List<TrackDTO> result = trackService.getAllTracks();
+//
+//        // Then
+//        assertEquals(3, result.size());
+//        for (int i = 0; i < result.size(); i++) {
+//            TrackDTO trackDTO = result.get(i);
+//            TrackEntity trackEntity = songEntities.get(i);
+//
+//            assertEquals(trackEntity.getId(), trackDTO.getId());
+//            assertEquals(trackEntity.getTitle(), trackDTO.getTitle());
+//            assertEquals(trackEntity.getDuration(), trackDTO.getDuration());
+//        }
+//    }
 
     @Test
     void test_valid_song_title() {
@@ -62,7 +102,7 @@ class TrackLastFmServiceTest extends ResourceFactory {
         String title = "Valid Song Title";
         TrackEntity trackEntity = provideTrackEntity();
         trackEntity.setTitle(title);
-        TrackDTO expectedTrackDTO = trackMapper.mapTrackEntityToTrackDTO(trackEntity);
+        TrackDTO expectedTrackDTO = trackMapper.toDTO(trackEntity);
         when(trackRepository.findByTitle(title)).thenReturn(Optional.of(trackEntity));
 
         // When

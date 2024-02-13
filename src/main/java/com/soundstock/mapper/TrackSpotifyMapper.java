@@ -9,14 +9,11 @@ import com.soundstock.model.dto.api.spotify.TrackSpotify;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
 @Mapper
 public interface TrackSpotifyMapper {
     @Mapping(target = "duration", source = "duration_ms")
     @Mapping(target = "spotifyId", source = "spotifyId")
-    TrackDTO mapTrackSpotifyToTrackDTO(TrackSpotify trackSpotify);
-    List<TrackDTO> mapTrackSpotifyToTrackDTOList(List<TrackSpotify> trackSpotifyList);
-    ArtistDTO artistSpotifyToArtistDTO(ArtistSpotify artistSpotify);
-    AlbumDTO albumSpotifyToAlbumDTO(AlbumSpotify album);
+    TrackDTO toDTO(TrackSpotify trackSpotify);
+    ArtistDTO toDTO(ArtistSpotify artistSpotify);
+    AlbumDTO toDTO(AlbumSpotify album);
 }

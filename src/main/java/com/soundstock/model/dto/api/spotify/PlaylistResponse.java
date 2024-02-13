@@ -3,10 +3,8 @@ package com.soundstock.model.dto.api.spotify;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.Map;
-
 @Data
-public class PlaylistSpotify {
+public class PlaylistResponse {
     private String description;
     private Followers followers;
     @JsonProperty("id")

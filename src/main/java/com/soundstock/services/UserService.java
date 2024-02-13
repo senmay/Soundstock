@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByUsernameOrEmail(userDTO.getUsername(), userDTO.getEmail())) {
             throw new EntityExistsException(USERNAME_OR_EMAIL_EXISTS);
         }
-        UserEntity userEntity = userMapper.mapToUserEntity(userDTO);
+        UserEntity userEntity = userMapper.toEntity(userDTO);
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepository.save(userEntity);
         response.addHeader("token", createAndStoreRegistrationToken(userDTO.getEmail()).getValue());
@@ -184,7 +184,7 @@ public class UserService implements UserDetailsService {
     }
 
     public List<UserDTO> getAllUsers() {
-        return userMapper.mapToUserList(userRepository.findAll());
+        return userMapper.toDTO(userRepository.findAll());
     }
 
     private void deactivateAllTokenForUser(String email) {
@@ -210,6 +210,6 @@ public class UserService implements UserDetailsService {
     public UserDTO getUser(Principal principal) {
         String username = principal.getName();
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFound(USER_NOT_FOUND));
-        return userMapper.mapToUserDTO(userEntity);
+        return userMapper.toDTO(userEntity);
     }
 }

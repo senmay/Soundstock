@@ -3,8 +3,6 @@ package com.soundstock.mappers;
 import com.soundstock.mapper.TrackMapper;
 import com.soundstock.mapper.TrackMapperImpl;
 import com.soundstock.model.dto.TrackDTO;
-import com.soundstock.model.entity.AlbumEntity;
-import com.soundstock.model.entity.ArtistEntity;
 import com.soundstock.model.entity.TrackEntity;
 import com.soundstock.testdata.ResourceFactory;
 import org.junit.Test;
@@ -37,10 +35,10 @@ public class TrackMapperTests extends ResourceFactory {
     @Test
     public void test_mapTrackDTOtoTrackEntity_withTrackDTO() {
         // Given
-        TrackDTO trackDTO = provideRandomTrack();
+        TrackDTO trackDTO = provideRandomTrackDTO();
 
         // When
-        TrackEntity trackEntity = trackMapper.mapTrackDTOtoTrackEntity(trackDTO);
+        TrackEntity trackEntity = trackMapper.toEntity(trackDTO);
 
         // Then
         assertNotNull(trackEntity);
@@ -73,7 +71,7 @@ public class TrackMapperTests extends ResourceFactory {
         List<TrackEntity> songEntities = new ArrayList<>();
 
         // When
-        List<TrackDTO> trackDTOS = trackMapper.mapTrackEntityToDTOList(songEntities);
+        List<TrackDTO> trackDTOS = trackMapper.toDTOList(songEntities);
 
         // Then
         assertNotNull(trackDTOS);
