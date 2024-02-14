@@ -16,8 +16,8 @@ public class OrderController {
     private final OrderService orderService;
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public String addOrder(Principal principal, @RequestBody OrderDTO orderDTO){
-        return orderService.registerOrder(orderDTO, principal);
+    public void addOrder(Principal principal, @RequestBody OrderDTO orderDTO){
+        orderService.registerOrder(orderDTO, principal);
     }
     @GetMapping("/orderid")
     @ResponseStatus(HttpStatus.OK)

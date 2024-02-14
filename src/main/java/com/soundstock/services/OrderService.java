@@ -4,11 +4,12 @@ import com.soundstock.exceptions.InsufficientBalanceException;
 import com.soundstock.exceptions.ObjectNotFound;
 import com.soundstock.mapper.OrderMapper;
 import com.soundstock.model.dto.OrderDTO;
-import com.soundstock.model.dto.StockDTO;
+import com.soundstock.model.dto.PortfolioItemDTO;
 import com.soundstock.model.entity.OrderEntity;
 import com.soundstock.model.entity.StockEntity;
 import com.soundstock.model.entity.UserEntity;
 import com.soundstock.repository.OrderRepository;
+import com.soundstock.repository.PortfolioItemRepository;
 import com.soundstock.repository.StockRepository;
 import com.soundstock.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -32,6 +33,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final UserRepository userRepository;
     private final StockRepository stockRepository;
+    private final PortfolioItemRepository portfolioItemRepository;
 
     @Transactional
     public String registerOrder(OrderDTO orderDTO, Principal principal) {
@@ -39,25 +41,33 @@ public class OrderService {
         UserEntity user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new ObjectNotFound(USER_NOT_FOUND));
 
-        stockRepository.findById(orderDTO.getStock().getId())
+        StockEntity stockEntity = stockRepository.findById(orderDTO.getStock().getId())
                 .orElseThrow(() -> new ObjectNotFound(STOCK_NOT_FOUND));
 
-        BigDecimal orderCost = orderDTO.getPricePerShare().multiply(new BigDecimal(orderDTO.getQuantity()));
+        BigDecimal orderCost = stockEntity.getPrice().multiply(new BigDecimal(orderDTO.getQuantity()));
         if (user.getBalance().compareTo(orderCost) < 0) {
             throw new InsufficientBalanceException(INSUFFICIENT_BALANCE);
         }
+        if (orderDTO.getTransactionType() == BUY) {
+            user.setBalance(user.getBalance().subtract(orderCost));
+        } else {
+            List<PortfolioItemDTO> totalQuantitiesAndValuesForAllTransactions = portfolioItemRepository
+                    .findTotalQuantitiesAndValuesForAllTransactions(orderRepository.findByUserId(user.getId()));
 
+            int totalQuantity = getTotalQuantityFromUser(orderDTO, totalQuantitiesAndValuesForAllTransactions);
+
+            if(orderDTO.getQuantity() <= totalQuantity){
+                user.setBalance(user.getBalance().add(orderCost));
+            } else {
+                throw new InsufficientBalanceException(INSUFFICIENT_BALANCE);
+            }
+        }
         OrderEntity orderEntity = orderMapper.mapDTOToOrderEntity(orderDTO);
         orderEntity.setTransactionValue(orderCost);
         orderEntity.setUser(user);
         orderRepository.save(orderEntity);
         log.info("Order saved");
 
-        if (orderDTO.getTransactionType() == BUY) {
-            user.setBalance(user.getBalance().subtract(orderCost));
-        } else {
-            user.setBalance(user.getBalance().add(orderCost));
-        }
         //TODO DODAĆ WIECEJ SPRAWDZEŃ
 
         userRepository.save(user);
@@ -65,7 +75,6 @@ public class OrderService {
 
         return "Order registered successfully";
     }
-
     public OrderDTO getOrder(Principal principal, Long orderid) {
         String username = principal.getName();
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFound(USER_NOT_FOUND));
@@ -88,5 +97,12 @@ public class OrderService {
 
     public List<OrderDTO> getAllOrders() {
         return orderMapper.mapOrderEntitesToDTOList(orderRepository.findAll());
+    }
+    private static int getTotalQuantityFromUser(OrderDTO orderDTO, List<PortfolioItemDTO> totalQuantitiesAndValuesForAllTransactions) {
+        return totalQuantitiesAndValuesForAllTransactions.stream()
+                .filter(c -> c.getStockName().equals(orderDTO.getStock().getName()))
+                .mapToInt(x -> Math.toIntExact(x.getQuantity()))
+                .findFirst()
+                .orElse(0);
     }
 }

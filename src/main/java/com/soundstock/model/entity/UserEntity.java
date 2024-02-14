@@ -35,14 +35,12 @@ public class UserEntity {
     private UserRole role;
     @OneToMany(mappedBy = "user")
     private List<OrderEntity> orders;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserEntity that)) return false;
         return enabled == that.enabled && id.equals(that.id) && username.equals(that.username) && email.equals(that.email) && password.equals(that.password) && Objects.equals(joinDate, that.joinDate) && Objects.equals(modificationDate, that.modificationDate) && role == that.role;
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(id, username, email, password, enabled, joinDate, modificationDate, role);
