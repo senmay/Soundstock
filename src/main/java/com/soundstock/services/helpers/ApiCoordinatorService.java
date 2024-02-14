@@ -39,7 +39,7 @@ public class ApiCoordinatorService {
 
     public void fetchAndSaveCoinDataToCsv(Integer size) {
         // Pobieranie danych o kryptowalutach
-        List<CoingeckoStockDTO> coins = seleniumService.scrapCoinsFromSelenium(size);
+        List<CoingeckoStockDTO> coins = seleniumService.scrapCoinsWithSelenium(size);
 
         // Zapisywanie danych do pliku CSV
         csvService.saveCoinsToCsv(coins);

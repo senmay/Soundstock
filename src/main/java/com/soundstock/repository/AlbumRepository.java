@@ -10,4 +10,5 @@ import java.util.Set;
 @Repository
 public interface AlbumRepository extends JpaRepository<AlbumEntity, Long> {
     Optional<AlbumEntity> findByTitle(String name);
+
 }

@@ -34,8 +34,8 @@ public class CoingeckoController {
     @GetMapping("/coins")
     @ResponseStatus(HttpStatus.OK)
     public List<CoingeckoStockDTO> getCoinsSelenium(@Param("size") Integer size){
-        log.info("Pobieranie listy kryptowalut");
-        return seleniumService.scrapCoinsFromSelenium(size);
+        log.info("Pobieranie listy kryptowalut z Selenium");
+        return seleniumService.scrapCoinsWithSelenium(size);
     }
     @GetMapping("/coins2")
     @ResponseStatus(HttpStatus.OK)

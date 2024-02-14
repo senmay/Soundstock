@@ -25,7 +25,7 @@ public class SeleniumService {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
-    public List<CoingeckoStockDTO> scrapCoinsFromSelenium(Integer size) {
+    public List<CoingeckoStockDTO> scrapCoinsWithSelenium(Integer size) {
         List<CoingeckoStockDTO> coins = new ArrayList<>();
         try {
             navigateToCoinGecko();
