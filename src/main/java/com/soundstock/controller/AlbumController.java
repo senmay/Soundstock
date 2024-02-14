@@ -1,6 +1,7 @@
 package com.soundstock.controller;
 
 import com.soundstock.model.dto.AlbumDTO;
+import com.soundstock.model.entity.AlbumEntity;
 import com.soundstock.services.AlbumService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,8 @@ public class AlbumController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public String createAlbum(@RequestBody AlbumDTO albumDTO) {
-        return albumService.createAlbum(albumDTO);
+    public AlbumEntity createAlbum(@RequestBody AlbumDTO albumDTO) {
+        return albumService.addAlbum(albumDTO);
     }
 
     @GetMapping("/getAll")

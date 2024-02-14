@@ -1,6 +1,7 @@
 package com.soundstock.controller;
 
 import com.soundstock.model.dto.ArtistDTO;
+import com.soundstock.model.entity.ArtistEntity;
 import com.soundstock.services.ArtistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,8 @@ public class ArtistController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public String addArtist(@RequestBody ArtistDTO artistDTO) {
-        artistService.addArtist(artistDTO);
-        return "Artist added";
+    public ArtistEntity addArtist(@RequestBody ArtistDTO artistDTO) {
+        return artistService.addArtist(artistDTO);
     }
 
     @GetMapping("/getAll")

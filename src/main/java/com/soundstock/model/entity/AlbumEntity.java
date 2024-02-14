@@ -1,6 +1,7 @@
 package com.soundstock.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,8 +25,11 @@ public class AlbumEntity {
     private String genre;
     private Integer year;
     @OneToMany(mappedBy = "album")
-    private List<SongEntity> songs;
+    private List<TrackEntity> tracks;
     String image;
     String description;
+    String spotifyId;
+    String release_date;
+    String total_tracks;
 
 }

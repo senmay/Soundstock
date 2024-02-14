@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface StockMapper {
-    List<StockDTO> mapStockEntitiesToDTOList(List<StockEntity> stockEntities);
-    StockDTO mapStockEntityToDTO(StockEntity stockEntity);
-    StockEntity mapDTOToAStockEntity(StockDTO stockDTO);
+    List<StockDTO> toDTO(List<StockEntity> stockEntities);
+    StockDTO toDTO(StockEntity stockEntity);
+    StockEntity toEntity(StockDTO stockDTO);
 }

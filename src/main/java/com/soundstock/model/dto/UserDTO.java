@@ -1,13 +1,16 @@
 package com.soundstock.model.dto;
 
 import com.soundstock.enums.UserRole;
-import lombok.Builder;
-import lombok.Value;
+import com.soundstock.model.entity.OrderEntity;
+import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-@Value
 @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
     Long id;
     String username;
@@ -16,4 +19,5 @@ public class UserDTO {
     boolean enabled;
     UserRole role;
     BigDecimal balance;
+    List<OrderEntity> orders;
 }

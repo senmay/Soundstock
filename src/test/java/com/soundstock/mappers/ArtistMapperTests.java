@@ -4,6 +4,7 @@ import com.soundstock.mapper.ArtistMapper;
 import com.soundstock.mapper.ArtistMapperImpl;
 import com.soundstock.model.dto.ArtistDTO;
 import com.soundstock.model.entity.ArtistEntity;
+import com.soundstock.testdata.ResourceFactory;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ArtistMapperTests {
+public class ArtistMapperTests extends ResourceFactory {
     ArtistMapper artistMapper = new ArtistMapperImpl();
     @Test
     public void test_mapArtistEntityToDTO() {
@@ -22,7 +23,7 @@ public class ArtistMapperTests {
                 .build();
 
         // Act
-        ArtistDTO artistDTO = artistMapper.mapArtistEntityToDTO(artistEntity);
+        ArtistDTO artistDTO = artistMapper.toDTO(artistEntity);
 
         // Assert
         assertEquals(artistEntity.getId(), artistDTO.getId());
@@ -45,7 +46,7 @@ public class ArtistMapperTests {
                 .build());
 
         // Act
-        List<ArtistDTO> artistDTOs = artistMapper.mapArtistEntitesToDTOList(artistEntities);
+        List<ArtistDTO> artistDTOs = artistMapper.toDTOList(artistEntities);
 
         // Assert
         assertEquals(artistEntities.size(), artistDTOs.size());
@@ -65,7 +66,7 @@ public class ArtistMapperTests {
         List<ArtistEntity> artistEntities = new ArrayList<>();
 
         // Act
-        List<ArtistDTO> artistDTOs = artistMapper.mapArtistEntitesToDTOList(artistEntities);
+        List<ArtistDTO> artistDTOs = artistMapper.toDTOList(artistEntities);
 
         // Assert
         assertNotNull(artistDTOs);
@@ -75,14 +76,10 @@ public class ArtistMapperTests {
     @Test
     public void test_mapArtistEntityToDTO_emptyAlbums() {
         // Arrange
-        ArtistEntity artistEntity = ArtistEntity.builder()
-                .id(1L)
-                .name("John Doe")
-                .albums(new ArrayList<>())
-                .build();
+        ArtistEntity artistEntity = provideArtistEntity();
 
         // Act
-        ArtistDTO artistDTO = artistMapper.mapArtistEntityToDTO(artistEntity);
+        ArtistDTO artistDTO = artistMapper.toDTO(artistEntity);
 
         // Assert
         assertEquals(artistEntity.getId(), artistDTO.getId());
@@ -95,14 +92,10 @@ public class ArtistMapperTests {
     @Test
     public void test_mapArtistEntityToDTO_nullAlbums() {
         // Arrange
-        ArtistEntity artistEntity = ArtistEntity.builder()
-                .id(1L)
-                .name("John Doe")
-                .albums(null)
-                .build();
+        ArtistEntity artistEntity = provideArtistEntity();
 
         // Act
-        ArtistDTO artistDTO = artistMapper.mapArtistEntityToDTO(artistEntity);
+        ArtistDTO artistDTO = artistMapper.toDTO(artistEntity);
 
         // Assert
         assertEquals(artistEntity.getId(), artistDTO.getId());

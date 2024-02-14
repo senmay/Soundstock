@@ -1,5 +1,7 @@
 package com.soundstock.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.soundstock.model.dto.api.spotify.ImageSpotify;
 import lombok.*;
 
 import java.util.List;
@@ -8,13 +10,16 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(value = {"artist"})
 public class AlbumDTO {
     Long id;
     String title;
     ArtistDTO artist;
-    String genre;
     Integer year;
-    List<SongDTO> songs;
+    List<TrackDTO> tracks;
     String image;
     String description;
+    String spotifyId;
+    String release_date;
+    String total_tracks;
 }

@@ -1,6 +1,6 @@
 package com.soundstock.config;
 
-import com.soundstock.services.CustomAuthenticationProvider;
+import com.soundstock.services.helpers.CustomAuthenticationProvider;
 import com.soundstock.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,16 +31,21 @@ public class SecurityConfig {
     //TODO create more String[] with different type of requests
     private final String[] whiteListedEndpoints = {
             "/user/v1/register", "/user/v1/confirm", "/user/v1/login", "/user/v1/refresh", "/user/v1/userlist",
-            "/song/v1/getSong", "/stock/v1/id", "/song/v1/getAll", "/artist/v1/getAll", "/artist/v1/id", "/artist/v1/name", "/album/v1/getAll",
+            "/track/v1/getSong", "/stock/v1/id", "/track/v1/getAll", "/artist/v1/getAll", "/artist/v1/id", "/artist/v1/name", "/album/v1/getAll",
             "/album/v1/id", "/order/v1/all",
             "/stock/v1/stocklist"};
     private final String[] endpointsWithOnlyAdminPrivileges = {
-            "/song/v1/add",
+            "/track/v1/add",
             "/stock/v1/add", "/stock/v1/delete", "/stock/v1/all",
             "/artist/v1/add", "/artist/v1/id",
-            "/album/v1/add"};
+            "/album/v1/add",
+            "/coin/v1/coins", "/coin/v1/coins2", "/coin/v1/import", "/coin/v1/coingecko",
+            "/lastfm/v1/songs", "/lastfm/v1/import",
+            "/spotify/v1/yearly-top-tracks", "/spotify/v1/fetch-and-save", "/spotify/v1/test", "spotify/v1/update-popularities",
+            "/playlist/v1/add", "/playlist/v1/all", "/playlist/v1/id", "/playlist/v1/name",
+            };
     private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/user/v1/userinfo", "/order/v1/add",
-            "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test"};
+            "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test", "/track/v1/getSong", "/track/v1/getAll"};
     private final String[] SWAGGER_WHITELIST = {
             "/api/v1/auth/**",
             "/v3/api-docs/**",

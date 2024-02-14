@@ -28,7 +28,7 @@ public class UserMapperTests {
                 .build();
 
         // When
-        UserEntity userEntity = userMapper.mapToUserEntity(userDTO);
+        UserEntity userEntity = userMapper.toEntity(userDTO);
 
         // Then
         assertEquals(userDTO.getId(), userEntity.getId());
@@ -53,7 +53,7 @@ public class UserMapperTests {
                 .build();
 
         // When
-        UserDTO userDTO = userMapper.mapToUserDTO(userEntity);
+        UserDTO userDTO = userMapper.toDTO(userEntity);
 
         // Then
         assertEquals(userEntity.getId(), userDTO.getId());
@@ -87,7 +87,7 @@ public class UserMapperTests {
                 .build());
 
         // When
-        List<UserDTO> userDTOs = userMapper.mapToUserList(userEntities);
+        List<UserDTO> userDTOs = userMapper.toDTO(userEntities);
 
         // Then
         assertEquals(userEntities.size(), userDTOs.size());
@@ -112,7 +112,7 @@ public class UserMapperTests {
         List<UserEntity> userEntities = new ArrayList<>();
 
         // When
-        List<UserDTO> userDTOs = userMapper.mapToUserList(userEntities);
+        List<UserDTO> userDTOs = userMapper.toDTO(userEntities);
 
         // Then
         assertTrue(userDTOs.isEmpty());
@@ -134,7 +134,7 @@ public class UserMapperTests {
         UserMapperImpl userMapper = new UserMapperImpl();
 
         // When
-        UserEntity userEntity = userMapper.mapToUserEntity(userDTO);
+        UserEntity userEntity = userMapper.toEntity(userDTO);
 
         // Then
         assertEquals(userDTO.getId(), userEntity.getId());
@@ -158,7 +158,7 @@ public class UserMapperTests {
                 .role(UserRole.ADMIN)
                 .build();
         // When
-        UserDTO userDTO = userMapper.mapToUserDTO(userEntity);
+        UserDTO userDTO = userMapper.toDTO(userEntity);
 
         // Then
         assertEquals(userEntity.getId(), userDTO.getId());
