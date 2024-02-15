@@ -33,6 +33,6 @@ public class StockController {
     }
     @GetMapping("/id")
     public StockDTO getStock(@PathVariable Long id){
-        return stockService.getStock(id);
+        return stockService.getStockById(id);
     }
 }

@@ -212,4 +212,7 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFound(USER_NOT_FOUND));
         return userMapper.toDTO(userEntity);
     }
+    public UserEntity getUserByUsername(String name) {
+        return userRepository.findByUsername(name).orElseThrow(() -> new ObjectNotFound(USER_NOT_FOUND));
+    }
 }

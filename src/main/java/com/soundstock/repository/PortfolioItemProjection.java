@@ -1,4 +1,4 @@
-package com.soundstock.model;
+package com.soundstock.repository;
 
 import java.math.BigDecimal;
 

@@ -42,10 +42,16 @@ public class StockService {
         return "Stock deleted successfully";
     }
 
-    public StockDTO getStock(Long id) {
+    public StockDTO getStockById(Long id) {
         if (!stockRepository.existsById((id))){
             throw new ObjectNotFound("Stock doesn't exist");
         }
         return stockMapper.toDTO(stockRepository.findById(id).get());
+    }
+    public StockDTO getStockByName(String name) {
+        if (!stockRepository.existsByName(name)){
+            throw new ObjectNotFound("Stock doesn't exist");
+        }
+        return stockMapper.toDTO(stockRepository.findByName(name));
     }
 }

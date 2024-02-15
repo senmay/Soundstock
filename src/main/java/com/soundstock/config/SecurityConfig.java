@@ -44,7 +44,7 @@ public class SecurityConfig {
             "/spotify/v1/yearly-top-tracks", "/spotify/v1/fetch-and-save", "/spotify/v1/test", "spotify/v1/update-popularities",
             "/playlist/v1/add", "/playlist/v1/all", "/playlist/v1/id", "/playlist/v1/name",
             };
-    private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/user/v1/userinfo", "/order/v1/add",
+    private final String[] endpointsWithOnlyUserPrivileges = {"/user/v1/jwt", "/user/v1/userinfo", "/order/v1/buy", "/order/v1/sell",
             "/order/v1/orderid", "/order/v1/my-orders", "/order/v1/test","/portfolio/v1/check"};
     private final String[] SWAGGER_WHITELIST = {
             "/api/v1/auth/**",

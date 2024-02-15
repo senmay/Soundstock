@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StockRepository extends JpaRepository<StockEntity, Long> {
     boolean existsByName(String name);
+    StockEntity findByName(String name);
 
 }

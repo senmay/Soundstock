@@ -20,3 +20,4 @@ public class ArtistDTO {
     List<AlbumDTO> albums;
     String spotifyId;
 }
+

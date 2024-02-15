@@ -1,9 +1,7 @@
 package com.soundstock.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.soundstock.enums.OrderType;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -19,7 +17,9 @@ public class PortfolioItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    String stockName;
+    String assetName;
     Long quantity;
     BigDecimal totalValue;
+    @Enumerated(EnumType.STRING)
+    OrderType orderType;
 }

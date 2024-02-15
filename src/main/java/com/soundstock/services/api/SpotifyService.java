@@ -9,6 +9,7 @@ import com.soundstock.model.entity.TrackPopularityHistory;
 import com.soundstock.repository.TrackPopularityHistoryRepository;
 import com.soundstock.repository.TrackRepository;
 import com.soundstock.services.helpers.HttpClientService;
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class SpotifyService {
                 .map(TrackPopularityHistory::getSpotifyId)
                 .toList();
     }
-    // Splitting the list of ids into groups of 25, because Spotify API allows to fetch data for 50 tracks at once
+    // Splitting the list of ids into groups of 25, because Spotify API allows to fetch data for 25 tracks at once
     private List<List<String>> splitIdsIntoGroups(List<String> ids) {
         return List.of(ids.subList(0, 25), ids.subList(25, ids.size()));
     }
@@ -53,14 +54,13 @@ public class SpotifyService {
         for (List<String> ids : groupOfIds) {
             String joinedIds = String.join(",", ids);
             HttpRequest request = buildRequestForTrackPopularity(joinedIds);
-            System.out.println("Request URI: " + request.uri());
             TracksResponse tracksResponse = httpClientService.sendRequest(request, TracksResponse.class);
             saveNewTrackPopularityHistory(tracksResponse);
         }
     }
     public void saveNewTrackPopularityHistory(TracksResponse tracksResponse) {
         tracksResponse.getTracks().forEach(track -> {
-            TrackEntity trackEntity = trackRepository.findBySpotifyId(track.getSpotifyId()).orElse(null);
+            TrackEntity trackEntity = trackRepository.findBySpotifyId(track.getSpotifyId()).orElseThrow(() -> new EntityExistsException("Track not found in database for Spotify ID: " + track.getSpotifyId()));
 
             if (trackEntity != null) {
                 TrackPopularityHistory newHistory = TrackPopularityHistory.builder()

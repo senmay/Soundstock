@@ -1,5 +1,6 @@
 package com.soundstock.controller;
 
+import com.soundstock.model.BaseOrder;
 import com.soundstock.model.dto.OrderDTO;
 import com.soundstock.services.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +15,15 @@ import java.util.List;
 @RequestMapping("order/v1")
 public class OrderController {
     private final OrderService orderService;
-    @PostMapping("/add")
+    @PostMapping("/buy")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addOrder(Principal principal, @RequestBody OrderDTO orderDTO){
-        orderService.registerOrder(orderDTO, principal);
+    public void buyOrder(Principal principal, @RequestBody BaseOrder order){
+        orderService.registerBuyOrder(order, principal);
+    }
+    @PostMapping("/sell")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void sellOrder(Principal principal, @RequestBody BaseOrder order){
+        orderService.registerSellOrder(order, principal);
     }
     @GetMapping("/orderid")
     @ResponseStatus(HttpStatus.OK)
